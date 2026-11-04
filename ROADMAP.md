@@ -67,14 +67,15 @@ _Commits: `c0d3764`, `0f288d6`, `cb3ab61`, `b7edbc8`_
 - [x] Shared `src/lib/assetTypes.ts` (types, statuses, return conditions)
 - [x] (Tables ready: `hardware_assets`, `asset_assignments`, `asset_history` — no new migration)
 
-### ⬜ Phase 6 — Purchase Requests Module
-- [ ] `src/services/purchaseRequests.ts` — request + line items CRUD
-- [ ] Requests list page (status filters: draft/submitted/approved/rejected/ordered/received)
-- [ ] Create request dialog with multiple line items (`purchase_request_items`)
-- [ ] Status workflow (submit → approve/reject → order → receive)
-- [ ] (Optional) "received" par inventory stock auto-update
-- [ ] Activity logging
-- [ ] (Tables ready: `purchase_requests`, `purchase_request_items`)
+### ✅ Phase 6 — Purchase Requests Module
+- [x] `src/services/purchaseRequests.ts` — request + line items CRUD, status workflow, auto number
+- [x] Requests list page (search by number, status filter, items summary, total qty)
+- [x] Create/Edit dialog with multiple line items (`purchase_request_items`), inventory-pick or custom
+- [x] Status workflow (draft → submitted → approved/rejected → ordered → received), only valid next steps shown
+- [x] Detail dialog (items view + status actions)
+- [x] Activity logging
+- [ ] (Optional, deferred) "received" par inventory stock auto-update
+- [x] (Tables ready: `purchase_requests`, `purchase_request_items` — no new migration)
 
 ### ⬜ Phase 7 — Activity Log Page
 > Logging infra pehle se hai; yahan sirf VIEW banana hai.
@@ -101,7 +102,7 @@ _Commits: `c0d3764`, `0f288d6`, `cb3ab61`, `b7edbc8`_
 
 ## Current Status
 
-**Phase 5 (Hardware Assets) tak mukammal.** Agla kaam **Phase 6 — Purchase Requests**.
+**Phase 6 (Purchase Requests) tak mukammal.** Agla kaam **Phase 7 — Activity Log page**.
 
 | Phase | Module | Status |
 |------|--------|--------|
@@ -110,7 +111,7 @@ _Commits: `c0d3764`, `0f288d6`, `cb3ab61`, `b7edbc8`_
 | 3 | Inventory | ✅ |
 | 4 | Employees | ✅ |
 | 5 | Hardware Assets | ✅ |
-| 6 | Purchase Requests | ⬜ **NEXT** |
-| 7 | Activity Log (view) | ⬜ |
+| 6 | Purchase Requests | ✅ |
+| 7 | Activity Log (view) | ⬜ **NEXT** |
 | 8 | Settings | ⬜ |
 | 9 | Polish & Deploy | ⬜ |
