@@ -1,11 +1,25 @@
 import { useState, useRef, useEffect } from 'react'
-import { Search, Bell, Sun, Moon, User, LogOut } from 'lucide-react'
+import { useLocation } from 'react-router-dom'
+import { Bell, Sun, Moon, LogOut, ChevronDown } from 'lucide-react'
 import { useTheme } from '@/contexts/ThemeContext'
 import { useAuth } from '@/contexts/AuthContext'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
+
+const pageMeta: Record<string, { title: string; subtitle: string }> = {
+  '/': { title: 'Dashboard', subtitle: 'Overview of inventory and hardware assets' },
+  '/inventory': { title: 'Inventory', subtitle: 'Manage office inventory and consumables' },
+  '/hardware-assets': { title: 'Hardware Assets', subtitle: 'Manage hardware assets and devices' },
+  '/employees': { title: 'Employees', subtitle: 'Manage employee records' },
+  '/purchase-requests': { title: 'Purchase Requests', subtitle: 'Manage purchase and reorder requests' },
+  '/activity-log': { title: 'Activity Log', subtitle: 'View all system activity and history' },
+  '/settings': { title: 'Settings', subtitle: 'Application settings and configuration' },
+}
 
 export function Header() {
   const { theme, toggleTheme } = useTheme()
   const { user, profile, signOut } = useAuth()
+  const location = useLocation()
+  const page = pageMeta[location.pathname] || { title: '', subtitle: '' }
   const [showUserMenu, setShowUserMenu] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
@@ -20,45 +34,60 @@ export function Header() {
   }, [])
 
   const displayName = profile?.full_name || user?.user_metadata?.full_name || user?.email || ''
+  const initials = displayName
+    .split(' ')
+    .map((n: string) => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2)
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border-default bg-surface px-6">
-      {/* Global Search */}
-      <div className="relative w-full max-w-md">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
-        <input
-          type="text"
-          placeholder="Search inventory, assets, employees..."
-          className="h-10 w-full rounded-lg border border-border-default bg-surface-secondary pl-10 pr-4 text-sm text-text-primary placeholder:text-text-muted focus:border-border-focus focus:outline-none"
-        />
-      </div>
+      {/* Page Title */}
+      <h1 className="text-xl font-bold text-primary">{page.title}</h1>
 
       {/* Right Actions */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1">
         {/* Notifications */}
-        <button className="relative flex h-10 w-10 items-center justify-center rounded-lg text-text-secondary hover:bg-surface-secondary hover:text-text-primary transition-colors">
-          <Bell className="h-5 w-5" strokeWidth={1.8} />
-        </button>
+        <Tooltip>
+          <TooltipTrigger className="flex h-9 w-9 items-center justify-center rounded-lg text-text-muted hover:bg-surface-secondary hover:text-text-primary transition-colors">
+            <Bell className="h-[18px] w-[18px]" strokeWidth={1.8} />
+          </TooltipTrigger>
+          <TooltipContent>Notifications</TooltipContent>
+        </Tooltip>
 
         {/* Theme Toggle */}
-        <button
-          onClick={toggleTheme}
-          className="flex h-10 w-10 items-center justify-center rounded-lg text-text-secondary hover:bg-surface-secondary hover:text-text-primary transition-colors"
-        >
-          {theme === 'light' ? (
-            <Moon className="h-5 w-5" strokeWidth={1.8} />
-          ) : (
-            <Sun className="h-5 w-5" strokeWidth={1.8} />
-          )}
-        </button>
+        <Tooltip>
+          <TooltipTrigger
+            onClick={toggleTheme}
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-text-muted hover:bg-surface-secondary hover:text-text-primary transition-colors"
+          >
+            {theme === 'light' ? (
+              <Moon className="h-[18px] w-[18px]" strokeWidth={1.8} />
+            ) : (
+              <Sun className="h-[18px] w-[18px]" strokeWidth={1.8} />
+            )}
+          </TooltipTrigger>
+          <TooltipContent>{theme === 'light' ? 'Dark mode' : 'Light mode'}</TooltipContent>
+        </Tooltip>
+
+        {/* Divider */}
+        <div className="mx-2 h-6 w-px bg-border-default" />
 
         {/* User Menu */}
         <div className="relative" ref={menuRef}>
           <button
             onClick={() => setShowUserMenu(!showUserMenu)}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-light text-primary"
+            className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-surface-secondary transition-colors"
           >
-            <User className="h-5 w-5" strokeWidth={1.8} />
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs font-semibold text-white">
+              {initials}
+            </div>
+            <div className="hidden sm:block text-left">
+              <p className="text-sm font-medium leading-tight text-text-primary">{displayName}</p>
+              <p className="text-[11px] leading-tight text-text-muted">{profile?.role === 'it_admin' ? 'IT Admin' : 'Office Manager'}</p>
+            </div>
+            <ChevronDown className="h-3.5 w-3.5 text-text-muted hidden sm:block" />
           </button>
 
           {showUserMenu && (

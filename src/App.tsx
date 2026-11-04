@@ -12,10 +12,12 @@ import { EmployeesPage } from '@/pages/employees/EmployeesPage'
 import { PurchaseRequestsPage } from '@/pages/purchase-requests/PurchaseRequestsPage'
 import { ActivityLogPage } from '@/pages/activity-log/ActivityLogPage'
 import { SettingsPage } from '@/pages/settings/SettingsPage'
+import { TooltipProvider } from '@/components/ui/tooltip'
 
 function App() {
   return (
     <ThemeProvider>
+    <TooltipProvider>
       <BrowserRouter>
         <AuthProvider>
           <Routes>
@@ -42,6 +44,7 @@ function App() {
           </Routes>
         </AuthProvider>
       </BrowserRouter>
+    </TooltipProvider>
     </ThemeProvider>
   )
 }
