@@ -77,12 +77,14 @@ _Commits: `c0d3764`, `0f288d6`, `cb3ab61`, `b7edbc8`_
 - [ ] (Optional, deferred) "received" par inventory stock auto-update
 - [x] (Tables ready: `purchase_requests`, `purchase_request_items` — no new migration)
 
-### ⬜ Phase 7 — Activity Log Page
-> Logging infra pehle se hai; yahan sirf VIEW banana hai.
-- [ ] Activity log list page with pagination
-- [ ] Filters (action type, entity_type, date range, performed_by)
-- [ ] Baaqi modules (Phase 4–6) ki services mein bhi activity logging add karna (abhi sirf inventory logs karti hai)
-- [ ] (Table ready: `activity_logs`)
+### ✅ Phase 7 — Activity Log Page
+- [x] Activity log timeline page with "Load more" pagination
+- [x] Search + module (entity_type) filter
+- [x] Shows WHO performed each action (performer name from profiles) + exact date/time
+- [x] Per-entry delete (hover), multi-select + bulk delete (select-all checkbox, indeterminate state)
+- [x] All modules (Phase 3–6) already log to `activity_logs` via their services
+- [x] Migration 004: read-all-profiles policy + delete policy on `activity_logs`
+- [x] (Table ready: `activity_logs`)
 
 ### ⬜ Phase 8 — Settings Module
 - [ ] Profile settings (name, email — `profiles` table)
@@ -102,7 +104,7 @@ _Commits: `c0d3764`, `0f288d6`, `cb3ab61`, `b7edbc8`_
 
 ## Current Status
 
-**Phase 6 (Purchase Requests) tak mukammal.** Agla kaam **Phase 7 — Activity Log page**.
+**Phase 7 (Activity Log) tak mukammal.** Agla kaam **Phase 8 — Settings**.
 
 | Phase | Module | Status |
 |------|--------|--------|
@@ -112,6 +114,6 @@ _Commits: `c0d3764`, `0f288d6`, `cb3ab61`, `b7edbc8`_
 | 4 | Employees | ✅ |
 | 5 | Hardware Assets | ✅ |
 | 6 | Purchase Requests | ✅ |
-| 7 | Activity Log (view) | ⬜ **NEXT** |
-| 8 | Settings | ⬜ |
+| 7 | Activity Log (view) | ✅ |
+| 8 | Settings | ⬜ **NEXT** |
 | 9 | Polish & Deploy | ⬜ |
