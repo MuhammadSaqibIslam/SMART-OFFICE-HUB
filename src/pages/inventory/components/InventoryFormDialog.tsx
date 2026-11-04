@@ -134,7 +134,9 @@ export function InventoryFormDialog({ open, onClose, onSubmit, item, categories 
                 onValueChange={(val) => { if (val) setValue('category_id', val) }}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select category" />
+                  <SelectValue placeholder="Select category">
+                    {categories.find(c => c.id === categoryValue)?.name}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {categories.map(cat => (
@@ -167,7 +169,9 @@ export function InventoryFormDialog({ open, onClose, onSubmit, item, categories 
                 onValueChange={(val) => { if (val) setValue('unit', val) }}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue />
+                  <SelectValue>
+                    {{ pcs: 'Pieces', kg: 'Kilograms', liters: 'Liters', boxes: 'Boxes', packs: 'Packs', rolls: 'Rolls', reams: 'Reams' }[unitValue] || unitValue}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="pcs">Pieces</SelectItem>
