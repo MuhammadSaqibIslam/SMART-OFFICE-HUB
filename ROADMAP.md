@@ -49,13 +49,13 @@ _Commits: `c0d3764`, `0f288d6`, `cb3ab61`, `b7edbc8`_
 
 ---
 
-### ⬜ Phase 4 — Employees Module  _(agला kaam / NEXT)_
-> Pehle isko banao kyunki Hardware Assets ke assignments employees pe depend karte hain.
-- [ ] `src/services/employees.ts` (Inventory service ke pattern pe) — CRUD
-- [ ] Employees list page (search, department/status filters)
-- [ ] Add/Edit employee dialog (full_name, employee_id, email, department, job_title, contact, joining_date, status)
-- [ ] Delete + activity logging
-- [ ] (Table + type already ready: `employees`)
+### ✅ Phase 4 — Employees Module
+- [x] `src/services/employees.ts` (Inventory service ke pattern pe) — CRUD + activity logging
+- [x] Employees list page (search by name/ID/email, department + status filters, empty state)
+- [x] Add/Edit employee dialog (full_name, employee_id, email, department, job_title, contact, joining_date, status, notes)
+- [x] Delete confirmation + activity logging
+- [x] Empty-string → null handling (keeps UNIQUE employee_id clean)
+- [x] (Table + type already ready: `employees`)
 
 ### ⬜ Phase 5 — Hardware Assets Module
 > Employees par depend karta hai (assignment ke liye employee chahiye).
@@ -101,15 +101,15 @@ _Commits: `c0d3764`, `0f288d6`, `cb3ab61`, `b7edbc8`_
 
 ## Current Status
 
-**Phase 3 (Inventory) tak mukammal.** Agla kaam **Phase 4 — Employees**.
+**Phase 4 (Employees) tak mukammal.** Agla kaam **Phase 5 — Hardware Assets**.
 
 | Phase | Module | Status |
 |------|--------|--------|
 | 1 | Foundation + Auth | ✅ |
 | 2 | DB Schema + Dashboard | ✅ |
 | 3 | Inventory | ✅ |
-| 4 | Employees | ⬜ **NEXT** |
-| 5 | Hardware Assets | ⬜ |
+| 4 | Employees | ✅ |
+| 5 | Hardware Assets | ⬜ **NEXT** |
 | 6 | Purchase Requests | ⬜ |
 | 7 | Activity Log (view) | ⬜ |
 | 8 | Settings | ⬜ |

@@ -44,6 +44,7 @@ export interface Employee {
   joining_date: string | null
   status: 'active' | 'inactive'
   notes: string | null
+  avatar_url: string | null
   created_at: string
   updated_at: string
 }
