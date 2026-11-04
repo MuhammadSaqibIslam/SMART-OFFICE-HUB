@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Loader2, Plus, Trash2 } from 'lucide-react'
+import { Loader2, Plus, Trash2, Package } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -9,13 +9,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import type { InventoryItem } from '@/types/database'
 import type { PRInput, PurchaseRequestWithItems } from '@/services/purchaseRequests'
 
@@ -35,18 +28,18 @@ interface Props {
 
 const emptyRow = (): Row => ({ item_id: null, item_name: '', quantity: 1 })
 
-const CUSTOM = '__custom__'
-
 export function PurchaseRequestFormDialog({ open, onClose, onSubmit, request, inventoryItems }: Props) {
   const [requestNumber, setRequestNumber] = useState('')
   const [notes, setNotes] = useState('')
   const [rows, setRows] = useState<Row[]>([emptyRow()])
+  const [openIdx, setOpenIdx] = useState<number | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
     if (open) {
       setError(null)
+      setOpenIdx(null)
       if (request) {
         setRequestNumber(request.request_number || '')
         setNotes(request.notes || '')
@@ -64,17 +57,20 @@ export function PurchaseRequestFormDialog({ open, onClose, onSubmit, request, in
     setRows((prev) => prev.map((r, i) => (i === idx ? { ...r, ...patch } : r)))
   }
 
-  const handlePickInventory = (idx: number, value: string) => {
-    if (value === CUSTOM) {
-      updateRow(idx, { item_id: null })
-      return
-    }
-    const inv = inventoryItems.find((i) => i.id === value)
-    if (inv) updateRow(idx, { item_id: inv.id, item_name: inv.name })
-  }
-
   const addRow = () => setRows((prev) => [...prev, emptyRow()])
   const removeRow = (idx: number) => setRows((prev) => (prev.length === 1 ? prev : prev.filter((_, i) => i !== idx)))
+
+  // Inventory suggestions matching what's typed (empty query shows all)
+  const suggestionsFor = (query: string) => {
+    const q = query.trim().toLowerCase()
+    const list = q ? inventoryItems.filter((i) => i.name.toLowerCase().includes(q)) : inventoryItems
+    return list.slice(0, 8)
+  }
+
+  const pickInventory = (idx: number, inv: InventoryItem) => {
+    updateRow(idx, { item_id: inv.id, item_name: inv.name })
+    setOpenIdx(null)
+  }
 
   const handleSubmit = async () => {
     const valid = rows.filter((r) => r.item_name.trim() && r.quantity > 0)
@@ -128,54 +124,66 @@ export function PurchaseRequestFormDialog({ open, onClose, onSubmit, request, in
                   <Plus className="h-3.5 w-3.5" /> Add Item
                 </Button>
               </div>
+              <p className="mb-2 text-xs text-text-muted">Type an item name, or pick one from inventory as you type.</p>
 
               <div className="space-y-2">
-                {/* header */}
-                <div className="hidden grid-cols-[1fr_1.4fr_80px_36px] gap-2 px-1 text-[11px] font-medium uppercase tracking-wide text-text-muted sm:grid">
-                  <span>From Inventory</span>
-                  <span>Item Name</span>
+                <div className="hidden grid-cols-[1fr_80px_36px] gap-2 px-1 text-[11px] font-medium uppercase tracking-wide text-text-muted sm:grid">
+                  <span>Item</span>
                   <span>Qty</span>
                   <span></span>
                 </div>
-                {rows.map((row, idx) => (
-                  <div key={idx} className="grid grid-cols-[1fr_1.4fr_80px_36px] items-center gap-2">
-                    <Select
-                      value={row.item_id || CUSTOM}
-                      onValueChange={(v) => { if (v) handlePickInventory(idx, v) }}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue>
-                          {row.item_id ? inventoryItems.find((i) => i.id === row.item_id)?.name || 'Inventory' : 'Custom'}
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value={CUSTOM}>Custom item</SelectItem>
-                        {inventoryItems.map((i) => (
-                          <SelectItem key={i.id} value={i.id}>{i.name}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <Input
-                      value={row.item_name}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateRow(idx, { item_name: e.target.value, item_id: null })}
-                      placeholder="Item name"
-                    />
-                    <Input
-                      type="number"
-                      min={1}
-                      value={row.quantity}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateRow(idx, { quantity: Number(e.target.value) })}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeRow(idx)}
-                      disabled={rows.length === 1}
-                      className="flex h-9 w-9 items-center justify-center rounded-md text-danger hover:bg-danger/10 disabled:opacity-30"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
-                ))}
+                {rows.map((row, idx) => {
+                  const suggestions = suggestionsFor(row.item_name)
+                  return (
+                    <div key={idx} className="grid grid-cols-[1fr_80px_36px] items-start gap-2">
+                      {/* Combobox */}
+                      <div className="relative">
+                        <Input
+                          value={row.item_name}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => { updateRow(idx, { item_name: e.target.value, item_id: null }); setOpenIdx(idx) }}
+                          onFocus={() => setOpenIdx(idx)}
+                          onBlur={() => setTimeout(() => setOpenIdx((cur) => (cur === idx ? null : cur)), 150)}
+                          placeholder="Type or pick an item"
+                        />
+                        {row.item_id && (
+                          <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2">
+                            <Package className="h-3.5 w-3.5 text-success" />
+                          </span>
+                        )}
+                        {openIdx === idx && suggestions.length > 0 && (
+                          <div className="absolute z-50 mt-1 max-h-48 w-full overflow-y-auto rounded-md border border-border-default bg-surface py-1 shadow-lg">
+                            {suggestions.map((inv) => (
+                              <button
+                                key={inv.id}
+                                type="button"
+                                onMouseDown={(e) => e.preventDefault()}
+                                onClick={() => pickInventory(idx, inv)}
+                                className="flex w-full items-center justify-between gap-2 px-3 py-1.5 text-left text-sm hover:bg-surface-secondary"
+                              >
+                                <span className="truncate text-text-primary">{inv.name}</span>
+                                <span className="shrink-0 text-xs text-text-muted">{inv.quantity} {inv.unit}</span>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      <Input
+                        type="number"
+                        min={1}
+                        value={row.quantity}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateRow(idx, { quantity: Number(e.target.value) })}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeRow(idx)}
+                        disabled={rows.length === 1}
+                        className="flex h-9 w-9 items-center justify-center rounded-md text-danger hover:bg-danger/10 disabled:opacity-30"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  )
+                })}
               </div>
             </div>
 
