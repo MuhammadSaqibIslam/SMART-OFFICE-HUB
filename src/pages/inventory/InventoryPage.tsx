@@ -191,22 +191,12 @@ export function InventoryPage() {
 
   return (
     <div className="space-y-6">
-      {/* Action Button */}
-      <div className="flex justify-end">
-        <Button
-          onClick={handleAdd}
-          className="bg-primary text-text-inverse hover:bg-primary-hover gap-2"
-        >
-          <Plus className="h-4 w-4" /> Add Item
-        </Button>
-      </div>
-
       {/* Error */}
       {pageError && (
         <div className="rounded-lg bg-danger/10 px-4 py-3 text-sm text-danger">{pageError}</div>
       )}
 
-      {/* Filters */}
+      {/* Filters + Add Button */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative w-full max-w-xs">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
@@ -245,6 +235,14 @@ export function InventoryPage() {
             </SelectContent>
           </Select>
         </div>
+        <div className="ml-auto">
+          <Button
+            onClick={handleAdd}
+            className="bg-primary text-text-inverse hover:bg-primary-hover gap-2"
+          >
+            <Plus className="h-4 w-4" /> Add Item
+          </Button>
+        </div>
       </div>
 
       {/* Table */}
@@ -260,12 +258,6 @@ export function InventoryPage() {
             </div>
             <p className="text-base font-medium text-text-secondary">No inventory items found</p>
             <p className="mt-1 text-sm text-text-muted">Get started by adding your first inventory item</p>
-            <Button
-              onClick={handleAdd}
-              className="mt-4 bg-primary text-text-inverse hover:bg-primary-hover gap-2"
-            >
-              <Plus className="h-4 w-4" /> Add Item
-            </Button>
           </div>
         ) : (
           <div className="overflow-x-auto">
