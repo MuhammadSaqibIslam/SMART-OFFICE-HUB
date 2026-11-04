@@ -11,6 +11,22 @@ export interface AppNotification {
   to: string
 }
 
+// ---- Read state (stored locally, since notifications are derived, not a table) ----
+const READ_KEY = 'soh-read-notifications'
+
+export function getReadIds(): string[] {
+  try {
+    const v = JSON.parse(localStorage.getItem(READ_KEY) || '[]')
+    return Array.isArray(v) ? v : []
+  } catch {
+    return []
+  }
+}
+
+export function saveReadIds(ids: string[]) {
+  localStorage.setItem(READ_KEY, JSON.stringify(ids))
+}
+
 export async function getNotifications(): Promise<AppNotification[]> {
   const out: AppNotification[] = []
 

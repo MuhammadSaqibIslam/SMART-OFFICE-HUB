@@ -4,7 +4,7 @@ import { Bell, Sun, Moon, LogOut, ChevronDown, Menu, CheckCircle2 } from 'lucide
 import { useTheme } from '@/contexts/ThemeContext'
 import { useAuth } from '@/contexts/AuthContext'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
-import { getNotifications, type AppNotification } from '@/services/notifications'
+import { getNotifications, getReadIds, saveReadIds, type AppNotification } from '@/services/notifications'
 
 const kindDot: Record<string, string> = {
   danger: 'bg-danger',
@@ -32,15 +32,44 @@ export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
   const menuRef = useRef<HTMLDivElement>(null)
 
   const [notifications, setNotifications] = useState<AppNotification[]>([])
+  const [readIds, setReadIds] = useState<string[]>(() => getReadIds())
   const [showNotif, setShowNotif] = useState(false)
   const notifRef = useRef<HTMLDivElement>(null)
 
   const loadNotifications = useCallback(() => {
-    getNotifications().then(setNotifications).catch(() => setNotifications([]))
+    getNotifications()
+      .then((list) => {
+        setNotifications(list)
+        // Prune stored read ids to only those that still exist
+        setReadIds((prev) => {
+          const valid = prev.filter((id) => list.some((n) => n.id === id))
+          saveReadIds(valid)
+          return valid
+        })
+      })
+      .catch(() => setNotifications([]))
   }, [])
 
   // Refresh notifications on mount and whenever the route changes (after actions)
   useEffect(() => { loadNotifications() }, [loadNotifications, location.pathname])
+
+  const isRead = (id: string) => readIds.includes(id)
+  const unreadCount = notifications.filter((n) => !isRead(n.id)).length
+
+  const markRead = (id: string) => {
+    setReadIds((prev) => {
+      if (prev.includes(id)) return prev
+      const next = [...prev, id]
+      saveReadIds(next)
+      return next
+    })
+  }
+
+  const markAllRead = () => {
+    const all = notifications.map((n) => n.id)
+    setReadIds(all)
+    saveReadIds(all)
+  }
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -56,6 +85,7 @@ export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
   }, [])
 
   const openNotification = (n: AppNotification) => {
+    markRead(n.id)
     setShowNotif(false)
     navigate(n.to)
   }
@@ -92,9 +122,9 @@ export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
             aria-label="Notifications"
           >
             <Bell className="h-[18px] w-[18px]" strokeWidth={1.8} />
-            {notifications.length > 0 && (
+            {unreadCount > 0 && (
               <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[10px] font-semibold text-white">
-                {notifications.length > 9 ? '9+' : notifications.length}
+                {unreadCount > 9 ? '9+' : unreadCount}
               </span>
             )}
           </button>
@@ -102,8 +132,14 @@ export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
           {showNotif && (
             <div className="absolute right-0 top-12 z-50 w-80 overflow-hidden rounded-xl border border-border-default bg-surface shadow-lg">
               <div className="flex items-center justify-between border-b border-border-default px-4 py-2.5">
-                <span className="text-sm font-semibold text-text-primary">Notifications</span>
-                <span className="text-xs text-text-muted">{notifications.length}</span>
+                <span className="text-sm font-semibold text-text-primary">
+                  Notifications{unreadCount > 0 && <span className="ml-1 text-xs font-normal text-text-muted">({unreadCount} new)</span>}
+                </span>
+                {unreadCount > 0 && (
+                  <button onClick={markAllRead} className="text-xs font-medium text-primary hover:text-primary-hover">
+                    Mark all read
+                  </button>
+                )}
               </div>
               <div className="max-h-96 overflow-y-auto">
                 {notifications.length === 0 ? (
@@ -113,19 +149,23 @@ export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
                     <p className="text-xs text-text-muted">No notifications right now</p>
                   </div>
                 ) : (
-                  notifications.map((n) => (
-                    <button
-                      key={n.id}
-                      onClick={() => openNotification(n)}
-                      className="flex w-full items-start gap-3 border-b border-border-default px-4 py-3 text-left last:border-0 hover:bg-surface-secondary/50"
-                    >
-                      <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${kindDot[n.kind]}`} />
-                      <div className="min-w-0">
-                        <p className="text-sm font-medium text-text-primary">{n.title}</p>
-                        <p className="text-xs text-text-muted">{n.description}</p>
-                      </div>
-                    </button>
-                  ))
+                  notifications.map((n) => {
+                    const unread = !isRead(n.id)
+                    return (
+                      <button
+                        key={n.id}
+                        onClick={() => openNotification(n)}
+                        className={`flex w-full items-start gap-3 border-b border-border-default px-4 py-3 text-left last:border-0 hover:bg-surface-secondary/50 ${unread ? 'bg-primary/[0.04]' : ''}`}
+                      >
+                        <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${unread ? kindDot[n.kind] : 'bg-border-default'}`} />
+                        <div className="min-w-0 flex-1">
+                          <p className={`text-sm ${unread ? 'font-medium text-text-primary' : 'text-text-secondary'}`}>{n.title}</p>
+                          <p className="text-xs text-text-muted">{n.description}</p>
+                        </div>
+                        {unread && <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" title="Unread" />}
+                      </button>
+                    )
+                  })
                 )}
               </div>
             </div>
