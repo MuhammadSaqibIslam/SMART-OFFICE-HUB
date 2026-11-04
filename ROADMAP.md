@@ -96,9 +96,9 @@ _Commits: `c0d3764`, `0f288d6`, `cb3ab61`, `b7edbc8`_
 - [x] Profile photo reuses the `employee-photos` bucket (no new bucket)
 
 ### ⬜ Phase 9 — Missing Features + Polish & Deploy _(last)_
-From the "Common Must-Have Features" checklist, 8/10 are done. Still missing:
-- [ ] **Forgot Password** flow (`auth.resetPasswordForEmail` + reset page) — not yet present
-- [ ] **Mobile responsive** sidebar (hamburger/drawer) — currently fixed `ml-64`, breaks on small screens
+From the "Common Must-Have Features" checklist, 8/10 were done; now 9.5/10:
+- [x] **Forgot Password** flow — `/forgot-password` (send reset link) + `/reset-password` (set new password); "Forgot password?" link on login
+- [~] **Mobile responsive** sidebar (hamburger/drawer) — base done (off-canvas drawer + backdrop + ☰ in header, content `lg:ml-64`); still needs polish
 - [ ] Loading & error states sab pages par consistent (mostly done)
 - [x] `npm run build` clean (TypeScript errors 0)
 - [ ] Deploy (Vercel/Netlify) + env vars

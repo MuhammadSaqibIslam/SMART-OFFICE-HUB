@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
-import { Bell, Sun, Moon, LogOut, ChevronDown } from 'lucide-react'
+import { Bell, Sun, Moon, LogOut, ChevronDown, Menu } from 'lucide-react'
 import { useTheme } from '@/contexts/ThemeContext'
 import { useAuth } from '@/contexts/AuthContext'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
@@ -15,7 +15,7 @@ const pageMeta: Record<string, { title: string; subtitle: string }> = {
   '/settings': { title: 'Settings', subtitle: 'Application settings and configuration' },
 }
 
-export function Header() {
+export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
   const { theme, toggleTheme } = useTheme()
   const { user, profile, signOut } = useAuth()
   const location = useLocation()
@@ -43,8 +43,17 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border-default bg-surface px-6">
-      {/* Page Title */}
-      <h1 className="text-xl font-bold text-primary">{page.title}</h1>
+      {/* Page Title + mobile menu */}
+      <div className="flex items-center gap-2">
+        <button
+          onClick={onMenuClick}
+          className="flex h-9 w-9 items-center justify-center rounded-lg text-text-muted hover:bg-surface-secondary hover:text-text-primary lg:hidden"
+          aria-label="Open menu"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
+        <h1 className="text-xl font-bold text-primary">{page.title}</h1>
+      </div>
 
       {/* Right Actions */}
       <div className="flex items-center gap-1">
