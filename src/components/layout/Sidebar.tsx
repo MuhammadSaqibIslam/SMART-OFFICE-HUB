@@ -9,6 +9,8 @@ import {
   Settings,
 } from 'lucide-react'
 
+const APP_VERSION = '1.0.0'
+
 const navItems = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/inventory', label: 'Inventory', icon: Package },
@@ -73,6 +75,13 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             ))}
           </ul>
         </nav>
+
+        {/* Version */}
+        <div className="border-t border-border-default px-6 py-3">
+          <p className="text-xs text-text-muted">
+            Smart Office Hub <span className="text-text-muted/70">· v{APP_VERSION}</span>
+          </p>
+        </div>
       </aside>
     </>
   )

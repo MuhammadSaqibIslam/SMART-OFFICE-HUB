@@ -1,9 +1,16 @@
-import { useState, useRef, useEffect } from 'react'
-import { useLocation } from 'react-router-dom'
-import { Bell, Sun, Moon, LogOut, ChevronDown, Menu } from 'lucide-react'
+import { useState, useRef, useEffect, useCallback } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { Bell, Sun, Moon, LogOut, ChevronDown, Menu, CheckCircle2 } from 'lucide-react'
 import { useTheme } from '@/contexts/ThemeContext'
 import { useAuth } from '@/contexts/AuthContext'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
+import { getNotifications, type AppNotification } from '@/services/notifications'
+
+const kindDot: Record<string, string> = {
+  danger: 'bg-danger',
+  warning: 'bg-warning',
+  info: 'bg-info',
+}
 
 const pageMeta: Record<string, { title: string; subtitle: string }> = {
   '/': { title: 'Dashboard', subtitle: 'Overview of inventory and hardware assets' },
@@ -19,19 +26,39 @@ export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
   const { theme, toggleTheme } = useTheme()
   const { user, profile, signOut } = useAuth()
   const location = useLocation()
+  const navigate = useNavigate()
   const page = pageMeta[location.pathname] || { title: '', subtitle: '' }
   const [showUserMenu, setShowUserMenu] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
+
+  const [notifications, setNotifications] = useState<AppNotification[]>([])
+  const [showNotif, setShowNotif] = useState(false)
+  const notifRef = useRef<HTMLDivElement>(null)
+
+  const loadNotifications = useCallback(() => {
+    getNotifications().then(setNotifications).catch(() => setNotifications([]))
+  }, [])
+
+  // Refresh notifications on mount and whenever the route changes (after actions)
+  useEffect(() => { loadNotifications() }, [loadNotifications, location.pathname])
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setShowUserMenu(false)
       }
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
+        setShowNotif(false)
+      }
     }
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
+
+  const openNotification = (n: AppNotification) => {
+    setShowNotif(false)
+    navigate(n.to)
+  }
 
   const displayName = profile?.full_name || user?.user_metadata?.full_name || user?.email || ''
   const initials = displayName
@@ -58,12 +85,52 @@ export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
       {/* Right Actions */}
       <div className="flex items-center gap-1">
         {/* Notifications */}
-        <Tooltip>
-          <TooltipTrigger className="flex h-9 w-9 items-center justify-center rounded-lg text-text-muted hover:bg-surface-secondary hover:text-text-primary transition-colors">
+        <div className="relative" ref={notifRef}>
+          <button
+            onClick={() => setShowNotif((s) => !s)}
+            className="relative flex h-9 w-9 items-center justify-center rounded-lg text-text-muted hover:bg-surface-secondary hover:text-text-primary transition-colors"
+            aria-label="Notifications"
+          >
             <Bell className="h-[18px] w-[18px]" strokeWidth={1.8} />
-          </TooltipTrigger>
-          <TooltipContent>Notifications</TooltipContent>
-        </Tooltip>
+            {notifications.length > 0 && (
+              <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[10px] font-semibold text-white">
+                {notifications.length > 9 ? '9+' : notifications.length}
+              </span>
+            )}
+          </button>
+
+          {showNotif && (
+            <div className="absolute right-0 top-12 z-50 w-80 overflow-hidden rounded-xl border border-border-default bg-surface shadow-lg">
+              <div className="flex items-center justify-between border-b border-border-default px-4 py-2.5">
+                <span className="text-sm font-semibold text-text-primary">Notifications</span>
+                <span className="text-xs text-text-muted">{notifications.length}</span>
+              </div>
+              <div className="max-h-96 overflow-y-auto">
+                {notifications.length === 0 ? (
+                  <div className="flex flex-col items-center gap-2 px-4 py-10 text-center">
+                    <CheckCircle2 className="h-8 w-8 text-success/60" />
+                    <p className="text-sm text-text-secondary">All caught up</p>
+                    <p className="text-xs text-text-muted">No notifications right now</p>
+                  </div>
+                ) : (
+                  notifications.map((n) => (
+                    <button
+                      key={n.id}
+                      onClick={() => openNotification(n)}
+                      className="flex w-full items-start gap-3 border-b border-border-default px-4 py-3 text-left last:border-0 hover:bg-surface-secondary/50"
+                    >
+                      <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${kindDot[n.kind]}`} />
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-text-primary">{n.title}</p>
+                        <p className="text-xs text-text-muted">{n.description}</p>
+                      </div>
+                    </button>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Theme Toggle */}
         <Tooltip>
