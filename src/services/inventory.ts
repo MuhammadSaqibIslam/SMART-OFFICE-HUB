@@ -11,6 +11,30 @@ export async function getCategories() {
   return data as InventoryCategory[]
 }
 
+export async function createCategory(name: string, description?: string) {
+  const { data, error } = await supabase
+    .from('inventory_categories')
+    .insert({ name: name.trim(), description: description?.trim() || null })
+    .select('*')
+    .single()
+  if (error) throw error
+  await logActivity('category_created', `Category "${name}" added`, 'inventory_category', data.id)
+  return data as InventoryCategory
+}
+
+export async function deleteCategory(id: string, name: string) {
+  const { data, error } = await supabase
+    .from('inventory_categories')
+    .delete()
+    .eq('id', id)
+    .select('id')
+  if (error) throw error
+  if (!data || data.length === 0) {
+    throw new Error('Could not delete category — it may be in use, or delete permission is missing (run migration 005).')
+  }
+  await logActivity('category_deleted', `Category "${name}" deleted`, 'inventory_category', id)
+}
+
 // ---- Inventory Items ----
 export async function getInventoryItems(filters?: {
   search?: string

@@ -80,8 +80,12 @@ export function Header() {
             onClick={() => setShowUserMenu(!showUserMenu)}
             className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-surface-secondary transition-colors"
           >
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs font-semibold text-white">
-              {initials}
+            <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-primary text-xs font-semibold text-white">
+              {profile?.avatar_url ? (
+                <img src={profile.avatar_url} alt={displayName} className="h-full w-full object-cover" />
+              ) : (
+                initials
+              )}
             </div>
             <div className="hidden sm:block text-left">
               <p className="text-sm font-medium leading-tight text-text-primary">{displayName}</p>

@@ -86,25 +86,28 @@ _Commits: `c0d3764`, `0f288d6`, `cb3ab61`, `b7edbc8`_
 - [x] Migration 004: read-all-profiles policy + delete policy on `activity_logs`
 - [x] (Table ready: `activity_logs`)
 
-### ⬜ Phase 8 — Settings Module
-- [ ] Profile settings (name, email — `profiles` table)
-- [ ] Theme preference (already `ThemeContext` hai, persist karna)
-- [ ] Inventory categories manage (add/edit/delete `inventory_categories`)
-- [ ] Change password
-- [ ] (Table ready: `profiles`, `inventory_categories`)
+### ✅ Phase 8 — Settings Module
+- [x] Profile settings (full name + profile photo upload; email + role read-only)
+- [x] Appearance (Light/Dark theme toggle)
+- [x] Change password (`auth.updateUser`)
+- [x] Inventory categories manage (add/delete `inventory_categories`)
+- [x] Header shows profile photo when set
+- [x] Migration 005: insert/update/delete policies on `inventory_categories`
+- [x] Profile photo reuses the `employee-photos` bucket (no new bucket)
 
-### ⬜ Phase 9 — Polish & Deploy _(optional / last)_
-- [ ] Loading & error states sab pages par consistent
-- [ ] Mobile responsive pass
-- [ ] `npm run build` clean (TypeScript errors 0)
-- [ ] Lint clean (`npm run lint`)
+### ⬜ Phase 9 — Missing Features + Polish & Deploy _(last)_
+From the "Common Must-Have Features" checklist, 8/10 are done. Still missing:
+- [ ] **Forgot Password** flow (`auth.resetPasswordForEmail` + reset page) — not yet present
+- [ ] **Mobile responsive** sidebar (hamburger/drawer) — currently fixed `ml-64`, breaks on small screens
+- [ ] Loading & error states sab pages par consistent (mostly done)
+- [x] `npm run build` clean (TypeScript errors 0)
 - [ ] Deploy (Vercel/Netlify) + env vars
 
 ---
 
 ## Current Status
 
-**Phase 7 (Activity Log) tak mukammal.** Agla kaam **Phase 8 — Settings**.
+**Phase 8 (Settings) tak mukammal.** Agla kaam **Phase 9 — missing features (Forgot Password, mobile responsive) + deploy**.
 
 | Phase | Module | Status |
 |------|--------|--------|
@@ -115,5 +118,5 @@ _Commits: `c0d3764`, `0f288d6`, `cb3ab61`, `b7edbc8`_
 | 5 | Hardware Assets | ✅ |
 | 6 | Purchase Requests | ✅ |
 | 7 | Activity Log (view) | ✅ |
-| 8 | Settings | ⬜ **NEXT** |
-| 9 | Polish & Deploy | ⬜ |
+| 8 | Settings | ✅ |
+| 9 | Forgot Password + Mobile + Deploy | ⬜ **NEXT** |
