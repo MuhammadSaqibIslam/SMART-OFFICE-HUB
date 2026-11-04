@@ -258,6 +258,12 @@ export function InventoryPage() {
             </div>
             <p className="text-base font-medium text-text-secondary">No inventory items found</p>
             <p className="mt-1 text-sm text-text-muted">Get started by adding your first inventory item</p>
+            <Button
+              onClick={handleAdd}
+              className="mt-4 bg-primary text-text-inverse hover:bg-primary-hover gap-2"
+            >
+              <Plus className="h-4 w-4" /> Add Item
+            </Button>
           </div>
         ) : (
           <div className="overflow-x-auto">
