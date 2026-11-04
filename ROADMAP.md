@@ -57,15 +57,15 @@ _Commits: `c0d3764`, `0f288d6`, `cb3ab61`, `b7edbc8`_
 - [x] Empty-string → null handling (keeps UNIQUE employee_id clean)
 - [x] (Table + type already ready: `employees`)
 
-### ⬜ Phase 5 — Hardware Assets Module
-> Employees par depend karta hai (assignment ke liye employee chahiye).
-- [ ] `src/services/assets.ts` — assets CRUD + assignment + return + history
-- [ ] Assets list page (type/status filters)
-- [ ] Add/Edit asset dialog
-- [ ] Assign-to-employee flow (`asset_assignments`) + return flow (condition, accessories)
-- [ ] Asset history view (`asset_history`)
-- [ ] Activity logging
-- [ ] (Tables ready: `hardware_assets`, `asset_assignments`, `asset_history`)
+### ✅ Phase 5 — Hardware Assets Module
+- [x] `src/services/assets.ts` — assets CRUD + assignment + return + history + activity logging
+- [x] Assets list page (search, type + status filters, "Assigned To" column)
+- [x] Add/Edit asset dialog (12 fields, smart type dropdown, fixed footer, scrollable body)
+- [x] Assign-to-employee flow (`asset_assignments`) + return flow (condition, accessories, notes)
+- [x] Asset history view (`asset_history`) — created/assigned/returned/updated timeline
+- [x] Activity logging
+- [x] Shared `src/lib/assetTypes.ts` (types, statuses, return conditions)
+- [x] (Tables ready: `hardware_assets`, `asset_assignments`, `asset_history` — no new migration)
 
 ### ⬜ Phase 6 — Purchase Requests Module
 - [ ] `src/services/purchaseRequests.ts` — request + line items CRUD
@@ -101,7 +101,7 @@ _Commits: `c0d3764`, `0f288d6`, `cb3ab61`, `b7edbc8`_
 
 ## Current Status
 
-**Phase 4 (Employees) tak mukammal.** Agla kaam **Phase 5 — Hardware Assets**.
+**Phase 5 (Hardware Assets) tak mukammal.** Agla kaam **Phase 6 — Purchase Requests**.
 
 | Phase | Module | Status |
 |------|--------|--------|
@@ -109,8 +109,8 @@ _Commits: `c0d3764`, `0f288d6`, `cb3ab61`, `b7edbc8`_
 | 2 | DB Schema + Dashboard | ✅ |
 | 3 | Inventory | ✅ |
 | 4 | Employees | ✅ |
-| 5 | Hardware Assets | ⬜ **NEXT** |
-| 6 | Purchase Requests | ⬜ |
+| 5 | Hardware Assets | ✅ |
+| 6 | Purchase Requests | ⬜ **NEXT** |
 | 7 | Activity Log (view) | ⬜ |
 | 8 | Settings | ⬜ |
 | 9 | Polish & Deploy | ⬜ |
