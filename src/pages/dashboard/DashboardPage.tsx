@@ -42,6 +42,7 @@ export function DashboardPage() {
   const [lowStockList, setLowStockList] = useState<InventoryItem[]>([])
   const [recentActivity, setRecentActivity] = useState<ActivityLog[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [pageError, setPageError] = useState<string | null>(null)
 
   useEffect(() => {
     fetchDashboardData()
@@ -49,6 +50,7 @@ export function DashboardPage() {
 
   const fetchDashboardData = async () => {
     setIsLoading(true)
+    setPageError(null)
     try {
       const [
         inventoryRes,
@@ -86,6 +88,7 @@ export function DashboardPage() {
       setRecentActivity((activityRes.data || []) as ActivityLog[])
     } catch (error) {
       console.error('Error fetching dashboard data:', error)
+      setPageError('Failed to load dashboard data')
     } finally {
       setIsLoading(false)
     }
@@ -100,14 +103,20 @@ export function DashboardPage() {
   }
 
   return (
-    <div className="flex h-full flex-col gap-5">
+    <div className="space-y-4 xl:flex xl:h-full xl:flex-col xl:gap-5 xl:space-y-0 page-enter">
+      {pageError && (
+        <div className="rounded-lg bg-danger/10 px-4 py-3 text-sm text-danger">{pageError}</div>
+      )}
+
       {/* Inventory KPIs */}
       <section>
-        <div className="mb-3 flex items-center gap-2">
-          <Package className="h-5 w-5 text-primary" strokeWidth={1.8} />
-          <h2 className="text-[15px] font-semibold text-text-primary">Inventory Overview</h2>
+        <div className="mb-2 sm:mb-3 flex items-center gap-2">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg icon-gradient-primary">
+            <Package className="h-4 w-4 sm:h-4.5 sm:w-4.5 text-primary" strokeWidth={1.8} />
+          </div>
+          <h2 className="text-[15px] sm:text-base lg:text-lg font-semibold text-text-primary">Inventory Overview</h2>
         </div>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-4">
           <KpiCard
             title="Total Items"
             value={stats.totalInventoryItems}
@@ -141,11 +150,13 @@ export function DashboardPage() {
 
       {/* Asset KPIs */}
       <section>
-        <div className="mb-3 flex items-center gap-2">
-          <Monitor className="h-5 w-5 text-primary" strokeWidth={1.8} />
-          <h2 className="text-[15px] font-semibold text-text-primary">Hardware Assets</h2>
+        <div className="mb-2 sm:mb-3 flex items-center gap-2">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg icon-gradient-primary">
+            <Monitor className="h-4 w-4 sm:h-4.5 sm:w-4.5 text-primary" strokeWidth={1.8} />
+          </div>
+          <h2 className="text-[15px] sm:text-base lg:text-lg font-semibold text-text-primary">Hardware Assets</h2>
         </div>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-4">
           <KpiCard
             title="Total Assets"
             value={stats.totalAssets}
@@ -178,13 +189,15 @@ export function DashboardPage() {
       </section>
 
       {/* Bottom Grid */}
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 flex-1 min-h-0">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3 xl:flex-1 xl:min-h-0">
         {/* Low Stock Items */}
-        <div className="rounded-xl border border-border-default bg-surface flex flex-col min-h-0">
-          <div className="flex items-center justify-between border-b border-border-default px-4 py-3">
+        <div className="rounded-xl border border-border-default bg-surface flex flex-col min-h-0 card-enhanced">
+          <div className="flex items-center justify-between border-b border-border-default px-4 py-3 card-header-accent">
             <div className="flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-warning" />
-              <h3 className="text-sm font-semibold text-text-primary">Low Stock Items</h3>
+              <div className="flex h-6 w-6 items-center justify-center rounded-md icon-gradient-warning">
+                <AlertTriangle className="h-3.5 w-3.5 text-warning" />
+              </div>
+              <h3 className="text-sm lg:text-base font-semibold text-text-primary">Low Stock Items</h3>
             </div>
             <Link to="/inventory" className="flex items-center gap-1 text-xs font-medium text-primary hover:text-primary-hover">
               View all <ChevronRight className="h-3 w-3" />
@@ -204,7 +217,7 @@ export function DashboardPage() {
                   <li key={item.id} className="flex items-center justify-between rounded-lg bg-surface-secondary/50 px-3 py-2.5">
                     <div>
                       <p className="text-sm font-medium text-text-primary">{item.name}</p>
-                      <p className="text-[11px] text-text-muted">Min: {item.min_stock_threshold} {item.unit}</p>
+                      <p className="text-xs text-text-muted">Min: {item.min_stock_threshold} {item.unit}</p>
                     </div>
                     <span className="rounded-full bg-warning/10 px-2.5 py-1 text-xs font-semibold text-warning tabular-nums">
                       {item.quantity} {item.unit}
@@ -217,11 +230,13 @@ export function DashboardPage() {
         </div>
 
         {/* Recent Activity */}
-        <div className="rounded-xl border border-border-default bg-surface flex flex-col min-h-0">
-          <div className="flex items-center justify-between border-b border-border-default px-4 py-3">
+        <div className="rounded-xl border border-border-default bg-surface flex flex-col min-h-0 card-enhanced">
+          <div className="flex items-center justify-between border-b border-border-default px-4 py-3 card-header-accent">
             <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4 text-info" />
-              <h3 className="text-sm font-semibold text-text-primary">Recent Activity</h3>
+              <div className="flex h-6 w-6 items-center justify-center rounded-md icon-gradient-info">
+                <Clock className="h-3.5 w-3.5 text-info" />
+              </div>
+              <h3 className="text-sm lg:text-base font-semibold text-text-primary">Recent Activity</h3>
             </div>
             <Link to="/activity-log" className="flex items-center gap-1 text-xs font-medium text-primary hover:text-primary-hover">
               View all <ChevronRight className="h-3 w-3" />
@@ -244,7 +259,7 @@ export function DashboardPage() {
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="text-sm text-text-primary truncate">{log.description}</p>
-                      <p className="text-[11px] text-text-muted">
+                      <p className="text-xs text-text-muted">
                         {new Date(log.created_at).toLocaleDateString('en-US', {
                           month: 'short',
                           day: 'numeric',
@@ -261,10 +276,12 @@ export function DashboardPage() {
         </div>
 
         {/* Quick Actions */}
-        <div className="rounded-xl border border-border-default bg-surface flex flex-col min-h-0">
-          <div className="flex items-center gap-2 border-b border-border-default px-4 py-3">
-            <Plus className="h-4 w-4 text-primary" />
-            <h3 className="text-sm font-semibold text-text-primary">Quick Actions</h3>
+        <div className="rounded-xl border border-border-default bg-surface flex flex-col min-h-0 card-enhanced">
+          <div className="flex items-center gap-2 border-b border-border-default px-4 py-3 card-header-accent">
+            <div className="flex h-6 w-6 items-center justify-center rounded-md icon-gradient-primary">
+              <Plus className="h-3.5 w-3.5 text-primary" />
+            </div>
+            <h3 className="text-sm lg:text-base font-semibold text-text-primary">Quick Actions</h3>
           </div>
           <div className="space-y-1 p-3">
             <QuickAction to="/inventory" icon={<Plus className="h-4 w-4" />} label="Add Inventory Item" desc="Add new consumable" />
@@ -294,22 +311,22 @@ function KpiCard({
   subtitle: string
 }) {
   const styles = {
-    primary: { icon: 'bg-primary/10 text-primary', border: 'border-primary/20' },
-    success: { icon: 'bg-success/10 text-success', border: 'border-success/20' },
-    warning: { icon: 'bg-warning/10 text-warning', border: 'border-warning/20' },
-    danger: { icon: 'bg-danger/10 text-danger', border: 'border-danger/20' },
-    info: { icon: 'bg-info/10 text-info', border: 'border-info/20' },
+    primary: { icon: 'icon-gradient-primary text-primary', border: 'border-primary/20', accent: 'kpi-accent-primary' },
+    success: { icon: 'icon-gradient-success text-success', border: 'border-success/20', accent: 'kpi-accent-success' },
+    warning: { icon: 'icon-gradient-warning text-warning', border: 'border-warning/20', accent: 'kpi-accent-warning' },
+    danger: { icon: 'icon-gradient-danger text-danger', border: 'border-danger/20', accent: 'kpi-accent-danger' },
+    info: { icon: 'icon-gradient-info text-info', border: 'border-info/20', accent: 'kpi-accent-info' },
   }
 
   return (
-    <div className={`rounded-xl border bg-surface px-4 py-3.5 ${styles[color].border}`}>
+    <div className={`rounded-xl border bg-surface px-3 pt-4 pb-2.5 sm:px-4 sm:pt-5 sm:pb-3.5 lg:px-5 lg:pt-6 lg:pb-4 kpi-card ${styles[color].accent} ${styles[color].border}`}>
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-[12px] font-medium text-text-muted">{title}</p>
-          <p className="mt-0.5 text-2xl font-bold tabular-nums text-text-primary">{value}</p>
-          <p className="text-[11px] text-text-muted">{subtitle}</p>
+          <p className="text-xs lg:text-sm font-medium text-text-muted">{title}</p>
+          <p className="mt-0.5 text-xl sm:text-2xl lg:text-[1.7rem] font-semibold tabular-nums text-text-primary">{value}</p>
+          <p className="text-[11px] sm:text-xs lg:text-sm text-text-muted">{subtitle}</p>
         </div>
-        <div className={`flex h-9 w-9 items-center justify-center rounded-lg ${styles[color].icon}`}>
+        <div className={`flex h-7 w-7 sm:h-9 sm:w-9 lg:h-10 lg:w-10 items-center justify-center rounded-lg ${styles[color].icon}`}>
           {icon}
         </div>
       </div>
@@ -331,14 +348,14 @@ function QuickAction({
   return (
     <Link
       to={to}
-      className="flex items-center gap-3 rounded-lg px-3 py-3 text-sm hover:bg-surface-secondary transition-colors group"
+      className="flex items-center gap-3 rounded-lg px-3 py-3 lg:px-4 lg:py-3.5 text-sm hover:bg-surface-secondary transition-colors group"
     >
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+      <span className="flex h-9 w-9 lg:h-10 lg:w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
         {icon}
       </span>
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-medium text-text-primary">{label}</p>
-        <p className="text-[11px] text-text-muted">{desc}</p>
+        <p className="text-sm lg:text-base font-medium text-text-primary">{label}</p>
+        <p className="text-xs lg:text-sm text-text-muted">{desc}</p>
       </div>
       <ChevronRight className="h-4 w-4 text-text-muted opacity-0 group-hover:opacity-100 transition-opacity" />
     </Link>

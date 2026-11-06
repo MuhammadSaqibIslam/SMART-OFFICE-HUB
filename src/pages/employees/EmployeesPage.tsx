@@ -5,7 +5,6 @@ import {
   Pencil,
   Trash2,
   Loader2,
-  Users,
   User,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -43,6 +42,7 @@ import {
 } from '@/services/employees'
 import { mergeDepartments } from '@/lib/departments'
 import type { Employee } from '@/types/database'
+import { EmptyEmployeesIllustration } from '@/components/shared/Illustrations'
 
 type StatusFilter = 'all' | 'active' | 'inactive'
 
@@ -156,7 +156,7 @@ export function EmployeesPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 page-enter">
       {/* Error */}
       {pageError && (
         <div className="rounded-lg bg-danger/10 px-4 py-3 text-sm text-danger">{pageError}</div>
@@ -164,7 +164,7 @@ export function EmployeesPage() {
 
       {/* Filters + Add Button */}
       <div className="flex flex-wrap items-center gap-3">
-        <div className="relative w-full max-w-xs">
+        <div className="relative w-full sm:max-w-xs">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
           <Input
             placeholder="Search by name, ID or email..."
@@ -174,11 +174,11 @@ export function EmployeesPage() {
           />
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[13px] text-text-muted">Department:</span>
+          <span className="text-[13px] text-text-muted hidden sm:inline">Department:</span>
           <Select value={departmentFilter} onValueChange={(v) => { if (v) setDepartmentFilter(v) }}>
-            <SelectTrigger className="w-44">
+            <SelectTrigger className="w-40 sm:w-44">
               <SelectValue>
-                {departmentFilter === 'all' ? 'All Departments' : departmentFilter}
+                {departmentFilter === 'all' ? 'All Depts' : departmentFilter}
               </SelectValue>
             </SelectTrigger>
             <SelectContent>
@@ -190,10 +190,12 @@ export function EmployeesPage() {
           </Select>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[13px] text-text-muted">Status:</span>
+          <span className="text-[13px] text-text-muted hidden sm:inline">Status:</span>
           <Select value={statusFilter} onValueChange={(v) => { if (v) setStatusFilter(v as StatusFilter) }}>
-            <SelectTrigger className="w-36">
-              <SelectValue />
+            <SelectTrigger className="w-28 sm:w-36">
+              <SelectValue>
+                {statusFilter === 'all' ? 'All Status' : statusFilter === 'active' ? 'Active' : 'Inactive'}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Status</SelectItem>
@@ -207,22 +209,20 @@ export function EmployeesPage() {
             onClick={handleAdd}
             className="bg-primary text-text-inverse hover:bg-primary-hover gap-2"
           >
-            <Plus className="h-4 w-4" /> Add Employee
+            <Plus className="h-4 w-4" /> <span className="hidden sm:inline">Add Employee</span><span className="sm:hidden">Add</span>
           </Button>
         </div>
       </div>
 
       {/* Table */}
-      <div className="rounded-xl border border-border-default bg-surface overflow-hidden">
+      <div className="rounded-xl border border-border-default bg-surface overflow-hidden table-enhanced">
         {isLoading ? (
           <div className="flex justify-center py-16">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
         ) : employees.length === 0 ? (
-          <div className="py-20 text-center">
-            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-primary/5">
-              <Users className="h-10 w-10 text-primary/40" strokeWidth={1.5} />
-            </div>
+          <div className="py-20 text-center animate-fade-in-up">
+            <EmptyEmployeesIllustration className="mx-auto mb-6 h-32 w-32 animate-float" />
             <p className="text-base font-medium text-text-secondary">No employees found</p>
             <p className="mt-1 text-sm text-text-muted">Get started by adding your first employee</p>
             <Button
@@ -238,10 +238,10 @@ export function EmployeesPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Name</TableHead>
-                  <TableHead>Employee ID</TableHead>
-                  <TableHead>Department</TableHead>
-                  <TableHead>Job Title</TableHead>
-                  <TableHead>Contact</TableHead>
+                  <TableHead className="hidden lg:table-cell">Employee ID</TableHead>
+                  <TableHead className="hidden md:table-cell">Department</TableHead>
+                  <TableHead className="hidden lg:table-cell">Job Title</TableHead>
+                  <TableHead className="hidden xl:table-cell">Contact</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
@@ -268,10 +268,10 @@ export function EmployeesPage() {
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="text-text-secondary">{emp.employee_id || '—'}</TableCell>
-                    <TableCell className="text-text-secondary">{emp.department || '—'}</TableCell>
-                    <TableCell className="text-text-secondary">{emp.job_title || '—'}</TableCell>
-                    <TableCell className="text-text-muted">{emp.contact_number || '—'}</TableCell>
+                    <TableCell className="hidden lg:table-cell text-text-secondary">{emp.employee_id || '—'}</TableCell>
+                    <TableCell className="hidden md:table-cell text-text-secondary">{emp.department || '—'}</TableCell>
+                    <TableCell className="hidden lg:table-cell text-text-secondary">{emp.job_title || '—'}</TableCell>
+                    <TableCell className="hidden xl:table-cell text-text-muted">{emp.contact_number || '—'}</TableCell>
                     <TableCell>{getStatusBadge(emp.status)}</TableCell>
                     <TableCell>
                       <div className="flex items-center justify-end gap-1">

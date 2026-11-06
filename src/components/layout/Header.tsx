@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { Bell, Sun, Moon, LogOut, ChevronDown, Menu, CheckCircle2 } from 'lucide-react'
+import { Bell, Sun, Moon, LogOut, ChevronDown, Menu } from 'lucide-react'
 import { useTheme } from '@/contexts/ThemeContext'
 import { useAuth } from '@/contexts/AuthContext'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { getNotifications, getReadIds, saveReadIds, type AppNotification } from '@/services/notifications'
+import { EmptyNotificationsIllustration } from '@/components/shared/Illustrations'
 
 const kindDot: Record<string, string> = {
   danger: 'bg-danger',
@@ -20,6 +21,7 @@ const pageMeta: Record<string, { title: string; subtitle: string }> = {
   '/purchase-requests': { title: 'Purchase Requests', subtitle: 'Manage purchase and reorder requests' },
   '/activity-log': { title: 'Activity Log', subtitle: 'View all system activity and history' },
   '/settings': { title: 'Settings', subtitle: 'Application settings and configuration' },
+  '/ask-ai': { title: 'Ask AI', subtitle: 'AI-powered assistant for your office data' },
 }
 
 export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
@@ -99,38 +101,43 @@ export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
     .slice(0, 2)
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border-default bg-surface px-6">
+    <header className="sticky top-0 z-30 flex h-14 sm:h-16 lg:h-[4.25rem] items-center justify-between border-b border-border-default bg-surface px-3 sm:px-6">
       {/* Page Title + mobile menu */}
       <div className="flex items-center gap-2">
         <button
           onClick={onMenuClick}
-          className="flex h-9 w-9 items-center justify-center rounded-lg text-text-muted hover:bg-surface-secondary hover:text-text-primary lg:hidden"
+          className="flex h-9 w-9 items-center justify-center rounded-lg text-text-muted hover:bg-surface-secondary hover:text-text-primary xl:hidden"
           aria-label="Open menu"
         >
-          <Menu className="h-5 w-5" />
+          <Menu className="h-5 w-5 lg:h-6 lg:w-6" />
         </button>
-        <h1 className="text-xl font-bold text-primary">{page.title}</h1>
+        <h1
+          onClick={() => { if (location.pathname !== '/') navigate('/') }}
+          className={`text-base sm:text-xl lg:text-2xl font-bold text-primary whitespace-nowrap ${location.pathname !== '/' ? 'cursor-pointer hover:text-primary-hover transition-colors' : ''}`}
+        >
+          {page.title}
+        </h1>
       </div>
 
       {/* Right Actions */}
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1 lg:gap-2">
         {/* Notifications */}
         <div className="relative" ref={notifRef}>
           <button
             onClick={() => setShowNotif((s) => !s)}
-            className="relative flex h-9 w-9 items-center justify-center rounded-lg text-text-muted hover:bg-surface-secondary hover:text-text-primary transition-colors"
+            className="relative flex h-9 w-9 lg:h-10 lg:w-10 items-center justify-center rounded-lg text-text-muted hover:bg-surface-secondary hover:text-text-primary transition-colors"
             aria-label="Notifications"
           >
-            <Bell className="h-[18px] w-[18px]" strokeWidth={1.8} />
+            <Bell className="h-[18px] w-[18px] lg:h-5 lg:w-5" strokeWidth={1.8} />
             {unreadCount > 0 && (
-              <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[10px] font-semibold text-white">
+              <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[10px] font-semibold text-white badge-pulse">
                 {unreadCount > 9 ? '9+' : unreadCount}
               </span>
             )}
           </button>
 
           {showNotif && (
-            <div className="absolute right-0 top-12 z-50 w-80 overflow-hidden rounded-xl border border-border-default bg-surface shadow-lg">
+            <div className="fixed inset-x-3 top-14 z-50 sm:absolute sm:inset-auto sm:right-0 sm:top-12 sm:w-80 overflow-hidden rounded-xl border border-border-default bg-surface shadow-lg">
               <div className="flex items-center justify-between border-b border-border-default px-4 py-2.5">
                 <span className="text-sm font-semibold text-text-primary">
                   Notifications{unreadCount > 0 && <span className="ml-1 text-xs font-normal text-text-muted">({unreadCount} new)</span>}
@@ -143,8 +150,8 @@ export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
               </div>
               <div className="max-h-96 overflow-y-auto">
                 {notifications.length === 0 ? (
-                  <div className="flex flex-col items-center gap-2 px-4 py-10 text-center">
-                    <CheckCircle2 className="h-8 w-8 text-success/60" />
+                  <div className="flex flex-col items-center gap-1 px-4 py-8 text-center animate-fade-in">
+                    <EmptyNotificationsIllustration className="h-20 w-20 animate-float" />
                     <p className="text-sm text-text-secondary">All caught up</p>
                     <p className="text-xs text-text-muted">No notifications right now</p>
                   </div>
@@ -176,19 +183,19 @@ export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
         <Tooltip>
           <TooltipTrigger
             onClick={toggleTheme}
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-text-muted hover:bg-surface-secondary hover:text-text-primary transition-colors"
+            className="flex h-9 w-9 lg:h-10 lg:w-10 items-center justify-center rounded-lg text-text-muted hover:bg-surface-secondary hover:text-text-primary transition-colors"
           >
             {theme === 'light' ? (
-              <Moon className="h-[18px] w-[18px]" strokeWidth={1.8} />
+              <Moon className="h-[18px] w-[18px] lg:h-5 lg:w-5" strokeWidth={1.8} />
             ) : (
-              <Sun className="h-[18px] w-[18px]" strokeWidth={1.8} />
+              <Sun className="h-[18px] w-[18px] lg:h-5 lg:w-5" strokeWidth={1.8} />
             )}
           </TooltipTrigger>
           <TooltipContent>{theme === 'light' ? 'Dark mode' : 'Light mode'}</TooltipContent>
         </Tooltip>
 
         {/* Divider */}
-        <div className="mx-2 h-6 w-px bg-border-default" />
+        <div className="mx-2 h-6 lg:h-7 w-px bg-border-default" />
 
         {/* User Menu */}
         <div className="relative" ref={menuRef}>
@@ -196,7 +203,7 @@ export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
             onClick={() => setShowUserMenu(!showUserMenu)}
             className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-surface-secondary transition-colors"
           >
-            <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-primary text-xs font-semibold text-white">
+            <div className="flex h-8 w-8 lg:h-9 lg:w-9 items-center justify-center overflow-hidden rounded-full bg-primary text-xs lg:text-sm font-semibold text-white">
               {profile?.avatar_url ? (
                 <img src={profile.avatar_url} alt={displayName} className="h-full w-full object-cover" />
               ) : (
@@ -204,8 +211,8 @@ export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
               )}
             </div>
             <div className="hidden sm:block text-left">
-              <p className="text-sm font-medium leading-tight text-text-primary">{displayName}</p>
-              <p className="text-[11px] leading-tight text-text-muted">{profile?.role === 'it_admin' ? 'IT Admin' : 'Office Manager'}</p>
+              <p className="text-sm lg:text-base font-medium leading-tight text-text-primary">{displayName}</p>
+              <p className="text-[11px] lg:text-xs leading-tight text-text-muted">{profile?.role === 'it_admin' ? 'IT Admin' : 'Office Manager'}</p>
             </div>
             <ChevronDown className="h-3.5 w-3.5 text-text-muted hidden sm:block" />
           </button>

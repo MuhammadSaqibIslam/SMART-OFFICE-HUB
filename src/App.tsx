@@ -14,6 +14,7 @@ import { EmployeesPage } from '@/pages/employees/EmployeesPage'
 import { PurchaseRequestsPage } from '@/pages/purchase-requests/PurchaseRequestsPage'
 import { ActivityLogPage } from '@/pages/activity-log/ActivityLogPage'
 import { SettingsPage } from '@/pages/settings/SettingsPage'
+import { AskAIPage } from '@/pages/ask-ai/AskAIPage'
 import { TooltipProvider } from '@/components/ui/tooltip'
 
 function App() {
@@ -44,6 +45,7 @@ function App() {
               <Route path="/purchase-requests" element={<PurchaseRequestsPage />} />
               <Route path="/activity-log" element={<ActivityLogPage />} />
               <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/ask-ai" element={<AskAIPage />} />
             </Route>
           </Routes>
         </AuthProvider>

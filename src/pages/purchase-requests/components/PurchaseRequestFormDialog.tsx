@@ -108,7 +108,7 @@ export function PurchaseRequestFormDialog({ open, onClose, onSubmit, request, in
         <div className="flex max-h-[70vh] flex-col">
           <div className="flex-1 space-y-4 overflow-y-auto px-1 py-1">
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Request Number</label>
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Request Number</label>
               <Input
                 value={requestNumber}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRequestNumber(e.target.value)}
@@ -119,7 +119,7 @@ export function PurchaseRequestFormDialog({ open, onClose, onSubmit, request, in
             {/* Line items */}
             <div>
               <div className="mb-2 flex items-center justify-between">
-                <label className="text-[13px] font-medium text-text-primary">Items *</label>
+                <label className="text-[13px] sm:text-sm font-medium text-text-primary">Items *</label>
                 <Button type="button" variant="outline" onClick={addRow} className="h-8 gap-1 text-xs">
                   <Plus className="h-3.5 w-3.5" /> Add Item
                 </Button>
@@ -135,7 +135,7 @@ export function PurchaseRequestFormDialog({ open, onClose, onSubmit, request, in
                 {rows.map((row, idx) => {
                   const suggestions = suggestionsFor(row.item_name)
                   return (
-                    <div key={idx} className="grid grid-cols-[1fr_80px_36px] items-start gap-2">
+                    <div key={idx} className="grid grid-cols-[1fr_70px_32px] sm:grid-cols-[1fr_80px_36px] items-start gap-2">
                       {/* Combobox */}
                       <div className="relative">
                         <Input
@@ -188,7 +188,7 @@ export function PurchaseRequestFormDialog({ open, onClose, onSubmit, request, in
             </div>
 
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Notes</label>
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Notes</label>
               <Textarea value={notes} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setNotes(e.target.value)} rows={2} placeholder="Reason / remarks for this request" />
             </div>
           </div>

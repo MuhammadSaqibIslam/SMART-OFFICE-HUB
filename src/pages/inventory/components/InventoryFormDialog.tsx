@@ -118,17 +118,17 @@ export function InventoryFormDialog({ open, onClose, onSubmit, item, categories 
         )}
 
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Name */}
-            <div className="col-span-2">
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Name *</label>
+            <div className="sm:col-span-2">
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Name *</label>
               <Input {...register('name')} placeholder="Item name" />
               {errors.name && <p className="mt-1 text-xs text-danger">{errors.name.message}</p>}
             </div>
 
             {/* Category */}
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Category *</label>
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Category *</label>
               <Select
                 value={categoryValue}
                 onValueChange={(val) => { if (val) setValue('category_id', val) }}
@@ -149,21 +149,21 @@ export function InventoryFormDialog({ open, onClose, onSubmit, item, categories 
 
             {/* Quantity */}
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Quantity *</label>
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Quantity *</label>
               <Input type="number" min={0} {...register('quantity')} />
               {errors.quantity && <p className="mt-1 text-xs text-danger">{errors.quantity.message}</p>}
             </div>
 
             {/* Min Stock */}
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Min Stock Threshold *</label>
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Min Stock Threshold *</label>
               <Input type="number" min={0} {...register('min_stock_threshold')} />
               {errors.min_stock_threshold && <p className="mt-1 text-xs text-danger">{errors.min_stock_threshold.message}</p>}
             </div>
 
             {/* Unit */}
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Unit *</label>
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Unit *</label>
               <Select
                 value={unitValue}
                 onValueChange={(val) => { if (val) setValue('unit', val) }}
@@ -187,13 +187,13 @@ export function InventoryFormDialog({ open, onClose, onSubmit, item, categories 
 
             {/* Location */}
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Location</label>
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Location</label>
               <Input {...register('location')} placeholder="Storage location" />
             </div>
 
             {/* Description */}
-            <div className="col-span-2">
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Description</label>
+            <div className="sm:col-span-2">
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Description</label>
               <Textarea {...register('description')} placeholder="Item description" rows={2} />
             </div>
           </div>

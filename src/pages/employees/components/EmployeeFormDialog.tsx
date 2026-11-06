@@ -160,7 +160,7 @@ export function EmployeeFormDialog({ open, onClose, onSubmit, employee, departme
 
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
           {/* Photo */}
-          <div className="flex items-center gap-4 rounded-xl border border-border-default bg-surface-secondary/40 p-4">
+          <div className="flex items-center gap-3 sm:gap-4 rounded-xl border border-border-default bg-surface-secondary/40 p-3 sm:p-4">
             <input
               ref={fileInputRef}
               type="file"
@@ -172,7 +172,7 @@ export function EmployeeFormDialog({ open, onClose, onSubmit, employee, departme
               type="button"
               onClick={() => { if (!uploading) fileInputRef.current?.click() }}
               aria-label={avatarUrl ? 'Change photo' : 'Upload photo'}
-              className="group relative h-20 w-20 shrink-0 rounded-full focus:outline-none"
+              className="group relative h-16 w-16 sm:h-20 sm:w-20 shrink-0 rounded-full focus:outline-none"
             >
               {/* Clipped circle: image + overlays */}
               <div className="h-full w-full overflow-hidden rounded-full border-2 border-surface bg-surface-secondary shadow-sm ring-1 ring-border-default transition group-hover:ring-2 group-hover:ring-primary/40 group-focus-visible:ring-2 group-focus-visible:ring-primary">
@@ -228,30 +228,30 @@ export function EmployeeFormDialog({ open, onClose, onSubmit, employee, departme
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Full Name */}
-            <div className="col-span-2">
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Full Name *</label>
+            <div className="sm:col-span-2">
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Full Name *</label>
               <Input {...register('full_name')} placeholder="e.g. Ali Ahmed" />
               {errors.full_name && <p className="mt-1 text-xs text-danger">{errors.full_name.message}</p>}
             </div>
 
             {/* Employee ID */}
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Employee ID</label>
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Employee ID</label>
               <Input {...register('employee_id')} placeholder="e.g. EMP-001" />
             </div>
 
             {/* Email */}
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Email</label>
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Email</label>
               <Input type="email" {...register('email')} placeholder="name@company.com" />
               {errors.email && <p className="mt-1 text-xs text-danger">{errors.email.message}</p>}
             </div>
 
             {/* Department */}
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Department</label>
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Department</label>
               {addingDept ? (
                 <div className="flex gap-2">
                   <Input
@@ -300,25 +300,25 @@ export function EmployeeFormDialog({ open, onClose, onSubmit, employee, departme
 
             {/* Job Title */}
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Job Title</label>
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Job Title</label>
               <Input {...register('job_title')} placeholder="e.g. Software Engineer" />
             </div>
 
             {/* Contact Number */}
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Contact Number</label>
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Contact Number</label>
               <Input {...register('contact_number')} placeholder="e.g. 0300-1234567" />
             </div>
 
             {/* Joining Date */}
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Joining Date</label>
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Joining Date</label>
               <Input type="date" {...register('joining_date')} />
             </div>
 
             {/* Status */}
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Status *</label>
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Status *</label>
               <Select
                 value={statusValue}
                 onValueChange={(val) => { if (val) setValue('status', val as 'active' | 'inactive') }}
@@ -336,8 +336,8 @@ export function EmployeeFormDialog({ open, onClose, onSubmit, employee, departme
             </div>
 
             {/* Notes */}
-            <div className="col-span-2">
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Notes</label>
+            <div className="sm:col-span-2">
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Notes</label>
               <Textarea {...register('notes')} placeholder="Additional notes" rows={2} />
             </div>
           </div>

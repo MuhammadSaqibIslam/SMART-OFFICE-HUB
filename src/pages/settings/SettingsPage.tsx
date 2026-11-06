@@ -28,9 +28,9 @@ function Section({ icon: Icon, title, description, children }: {
   children: React.ReactNode
 }) {
   return (
-    <div className="rounded-xl border border-border-default bg-surface p-5">
+    <div className="rounded-xl border border-border-default bg-surface p-5 card-enhanced">
       <div className="mb-4 flex items-start gap-3">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg icon-gradient-primary text-primary">
           <Icon className="h-4.5 w-4.5" strokeWidth={1.8} />
         </div>
         <div>
@@ -63,6 +63,7 @@ export function SettingsPage() {
 
   // Categories
   const [categories, setCategories] = useState<InventoryCategory[]>([])
+  const [catLoading, setCatLoading] = useState(true)
   const [newCategory, setNewCategory] = useState('')
   const [catBusy, setCatBusy] = useState(false)
   const [catMsg, setCatMsg] = useState<{ ok: boolean; text: string } | null>(null)
@@ -71,7 +72,7 @@ export function SettingsPage() {
     setFullName(profile?.full_name || '')
     setAvatarUrl(profile?.avatar_url || '')
   }, [profile])
-  useEffect(() => { getCategories().then(setCategories).catch(() => setCategories([])) }, [])
+  useEffect(() => { getCategories().then(setCategories).catch(() => setCategories([])).finally(() => setCatLoading(false)) }, [])
 
   const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -159,7 +160,7 @@ export function SettingsPage() {
     )
 
   return (
-    <div className="mx-auto max-w-2xl space-y-5">
+    <div className="mx-auto max-w-2xl space-y-5 page-enter">
       {/* Profile */}
       <Section icon={UserIcon} title="Profile" description="Your account details">
         <div className="space-y-3">
@@ -205,16 +206,16 @@ export function SettingsPage() {
           </div>
 
           <div>
-            <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Full Name</label>
+            <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Full Name</label>
             <Input value={fullName} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFullName(e.target.value)} />
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Email</label>
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Email</label>
               <Input value={user?.email || ''} disabled className="opacity-60" />
             </div>
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Role</label>
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Role</label>
               <Input value={profile?.role === 'it_admin' ? 'IT Admin' : 'Office Manager'} disabled className="opacity-60" />
             </div>
           </div>
@@ -248,13 +249,13 @@ export function SettingsPage() {
       {/* Change Password */}
       <Section icon={Lock} title="Change Password" description="Update your login password">
         <div className="space-y-3">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">New Password</label>
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">New Password</label>
               <Input type="password" value={newPass} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewPass(e.target.value)} placeholder="••••••••" />
             </div>
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Confirm Password</label>
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Confirm Password</label>
               <Input type="password" value={confirmPass} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfirmPass(e.target.value)} placeholder="••••••••" />
             </div>
           </div>
@@ -283,7 +284,11 @@ export function SettingsPage() {
           </div>
           {msgLine(catMsg)}
           <div className="divide-y divide-border-default rounded-lg border border-border-default">
-            {categories.length === 0 ? (
+            {catLoading ? (
+              <div className="flex justify-center py-4">
+                <Loader2 className="h-5 w-5 animate-spin text-primary" />
+              </div>
+            ) : categories.length === 0 ? (
               <p className="px-3 py-4 text-sm text-text-muted">No categories yet</p>
             ) : (
               categories.map((cat) => (

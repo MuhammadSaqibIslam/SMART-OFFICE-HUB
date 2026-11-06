@@ -159,17 +159,17 @@ export function AssetFormDialog({ open, onClose, onSubmit, asset, assetTypes = [
 
         <form onSubmit={handleSubmit(handleFormSubmit)} className="flex max-h-[70vh] flex-col">
           <div className="flex-1 overflow-y-auto px-1 py-1">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Name */}
-            <div className="col-span-2">
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Name *</label>
+            <div className="sm:col-span-2">
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Name *</label>
               <Input {...register('name')} placeholder="e.g. Dell Latitude 5420" />
               {errors.name && <p className="mt-1 text-xs text-danger">{errors.name.message}</p>}
             </div>
 
             {/* Asset Type */}
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Asset Type *</label>
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Asset Type *</label>
               {addingType ? (
                 <div className="flex gap-2">
                   <Input
@@ -207,7 +207,7 @@ export function AssetFormDialog({ open, onClose, onSubmit, asset, assetTypes = [
 
             {/* Status */}
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Status</label>
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Status</label>
               {isAssigned ? (
                 <div className="flex h-9 items-center rounded-md border border-border-default bg-surface-secondary/50 px-3 text-sm text-text-muted">
                   Assigned — return it to change status
@@ -228,55 +228,55 @@ export function AssetFormDialog({ open, onClose, onSubmit, asset, assetTypes = [
 
             {/* Brand */}
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Brand</label>
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Brand</label>
               <Input {...register('brand')} placeholder="e.g. Dell" />
             </div>
 
             {/* Model */}
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Model</label>
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Model</label>
               <Input {...register('model')} placeholder="e.g. Latitude 5420" />
             </div>
 
             {/* Serial Number */}
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Serial Number</label>
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Serial Number</label>
               <Input {...register('serial_number')} placeholder="e.g. SN-123456" />
             </div>
 
             {/* Location */}
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Location</label>
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Location</label>
               <Input {...register('location')} placeholder="e.g. Floor 2, Room A" />
             </div>
 
             {/* Purchase Date */}
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Purchase Date</label>
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Purchase Date</label>
               <Input type="date" {...register('purchase_date')} />
             </div>
 
             {/* Purchase Cost */}
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Purchase Cost</label>
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Purchase Cost</label>
               <Input type="number" min={0} step="0.01" {...register('purchase_cost')} placeholder="0.00" />
             </div>
 
             {/* Warranty Expiry */}
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Warranty Expiry</label>
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Warranty Expiry</label>
               <Input type="date" {...register('warranty_expiry')} />
             </div>
 
             {/* Description */}
-            <div className="col-span-2">
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Description</label>
+            <div className="sm:col-span-2">
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Description</label>
               <Textarea {...register('description')} placeholder="Short description" rows={2} />
             </div>
 
             {/* Notes */}
-            <div className="col-span-2">
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Notes</label>
+            <div className="sm:col-span-2">
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Notes</label>
               <Textarea {...register('notes')} placeholder="Additional notes" rows={2} />
             </div>
           </div>

@@ -5,7 +5,6 @@ import {
   Pencil,
   Trash2,
   Loader2,
-  ShoppingCart,
   Eye,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -49,6 +48,7 @@ import {
 } from '@/services/purchaseRequests'
 import { getInventoryItems } from '@/services/inventory'
 import type { InventoryItem } from '@/types/database'
+import { EmptyPurchaseIllustration } from '@/components/shared/Illustrations'
 
 export function PurchaseRequestsPage() {
   const [requests, setRequests] = useState<PurchaseRequestWithItems[]>([])
@@ -138,14 +138,14 @@ export function PurchaseRequestsPage() {
     (r.purchase_request_items || []).reduce((sum, i) => sum + i.quantity, 0)
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 page-enter">
       {pageError && (
         <div className="rounded-lg bg-danger/10 px-4 py-3 text-sm text-danger">{pageError}</div>
       )}
 
       {/* Filters + Add */}
       <div className="flex flex-wrap items-center gap-3">
-        <div className="relative w-full max-w-xs">
+        <div className="relative w-full sm:max-w-xs">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
           <Input
             placeholder="Search by request number..."
@@ -155,9 +155,9 @@ export function PurchaseRequestsPage() {
           />
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[13px] text-text-muted">Status:</span>
+          <span className="text-[13px] text-text-muted hidden sm:inline">Status:</span>
           <Select value={statusFilter} onValueChange={(v) => { if (v) setStatusFilter(v) }}>
-            <SelectTrigger className="w-40">
+            <SelectTrigger className="w-36 sm:w-40">
               <SelectValue>{statusFilter === 'all' ? 'All Status' : PR_STATUSES.find((s) => s.value === statusFilter)?.label}</SelectValue>
             </SelectTrigger>
             <SelectContent>
@@ -168,22 +168,20 @@ export function PurchaseRequestsPage() {
         </div>
         <div className="ml-auto">
           <Button onClick={handleAdd} className="bg-primary text-text-inverse hover:bg-primary-hover gap-2">
-            <Plus className="h-4 w-4" /> New Request
+            <Plus className="h-4 w-4" /> <span className="hidden sm:inline">New Request</span><span className="sm:hidden">New</span>
           </Button>
         </div>
       </div>
 
       {/* Table */}
-      <div className="rounded-xl border border-border-default bg-surface overflow-hidden">
+      <div className="rounded-xl border border-border-default bg-surface overflow-hidden table-enhanced">
         {isLoading ? (
           <div className="flex justify-center py-16">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
         ) : requests.length === 0 ? (
-          <div className="py-20 text-center">
-            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-primary/5">
-              <ShoppingCart className="h-10 w-10 text-primary/40" strokeWidth={1.5} />
-            </div>
+          <div className="py-20 text-center animate-fade-in-up">
+            <EmptyPurchaseIllustration className="mx-auto mb-6 h-32 w-32 animate-float" />
             <p className="text-base font-medium text-text-secondary">No purchase requests found</p>
             <p className="mt-1 text-sm text-text-muted">Create your first purchase request</p>
             <Button onClick={handleAdd} className="mt-4 bg-primary text-text-inverse hover:bg-primary-hover gap-2">
@@ -196,10 +194,10 @@ export function PurchaseRequestsPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Request #</TableHead>
-                  <TableHead>Items</TableHead>
-                  <TableHead>Total Qty</TableHead>
+                  <TableHead className="hidden md:table-cell">Items</TableHead>
+                  <TableHead className="hidden lg:table-cell">Total Qty</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Created</TableHead>
+                  <TableHead className="hidden md:table-cell">Created</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -207,14 +205,14 @@ export function PurchaseRequestsPage() {
                 {requests.map((r) => (
                   <TableRow key={r.id} className="hover:bg-surface-secondary/50 cursor-pointer" onClick={() => handleView(r)}>
                     <TableCell className="font-medium text-text-primary">{r.request_number || '—'}</TableCell>
-                    <TableCell className="text-text-secondary">{itemsSummary(r)}</TableCell>
-                    <TableCell className="tabular-nums text-text-secondary">{totalQty(r)}</TableCell>
+                    <TableCell className="hidden md:table-cell text-text-secondary">{itemsSummary(r)}</TableCell>
+                    <TableCell className="hidden lg:table-cell tabular-nums text-text-secondary">{totalQty(r)}</TableCell>
                     <TableCell>
                       <Badge className={`border-0 ${PR_STATUS_BADGE[r.status]}`}>
                         {PR_STATUSES.find((s) => s.value === r.status)?.label || r.status}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-text-muted">{new Date(r.created_at).toLocaleDateString()}</TableCell>
+                    <TableCell className="hidden md:table-cell text-text-muted">{new Date(r.created_at).toLocaleDateString()}</TableCell>
                     <TableCell onClick={(e) => e.stopPropagation()}>
                       <div className="flex items-center justify-end gap-1">
                         <Tooltip>

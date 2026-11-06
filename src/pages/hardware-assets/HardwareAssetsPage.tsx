@@ -5,7 +5,6 @@ import {
   Pencil,
   Trash2,
   Loader2,
-  Monitor,
   UserPlus,
   Undo2,
   History,
@@ -51,6 +50,7 @@ import {
 import { getEmployees } from '@/services/employees'
 import { mergeAssetTypes, ASSET_STATUSES } from '@/lib/assetTypes'
 import type { Employee, HardwareAsset } from '@/types/database'
+import { EmptyAssetsIllustration } from '@/components/shared/Illustrations'
 
 export function HardwareAssetsPage() {
   const [assets, setAssets] = useState<AssetWithAssignment[]>([])
@@ -177,14 +177,14 @@ export function HardwareAssetsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 page-enter">
       {pageError && (
         <div className="rounded-lg bg-danger/10 px-4 py-3 text-sm text-danger">{pageError}</div>
       )}
 
       {/* Filters + Add */}
       <div className="flex flex-wrap items-center gap-3">
-        <div className="relative w-full max-w-xs">
+        <div className="relative w-full sm:max-w-xs">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
           <Input
             placeholder="Search name, serial, brand..."
@@ -194,9 +194,9 @@ export function HardwareAssetsPage() {
           />
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[13px] text-text-muted">Type:</span>
+          <span className="text-[13px] text-text-muted hidden sm:inline">Type:</span>
           <Select value={typeFilter} onValueChange={(v) => { if (v) setTypeFilter(v) }}>
-            <SelectTrigger className="w-40">
+            <SelectTrigger className="w-32 sm:w-40">
               <SelectValue>{typeFilter === 'all' ? 'All Types' : typeFilter}</SelectValue>
             </SelectTrigger>
             <SelectContent>
@@ -206,9 +206,9 @@ export function HardwareAssetsPage() {
           </Select>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[13px] text-text-muted">Status:</span>
+          <span className="text-[13px] text-text-muted hidden sm:inline">Status:</span>
           <Select value={statusFilter} onValueChange={(v) => { if (v) setStatusFilter(v) }}>
-            <SelectTrigger className="w-44">
+            <SelectTrigger className="w-36 sm:w-44">
               <SelectValue>{statusFilter === 'all' ? 'All Status' : ASSET_STATUSES.find((s) => s.value === statusFilter)?.label}</SelectValue>
             </SelectTrigger>
             <SelectContent>
@@ -219,22 +219,20 @@ export function HardwareAssetsPage() {
         </div>
         <div className="ml-auto">
           <Button onClick={handleAdd} className="bg-primary text-text-inverse hover:bg-primary-hover gap-2">
-            <Plus className="h-4 w-4" /> Add Asset
+            <Plus className="h-4 w-4" /> <span className="hidden sm:inline">Add Asset</span><span className="sm:hidden">Add</span>
           </Button>
         </div>
       </div>
 
       {/* Table */}
-      <div className="rounded-xl border border-border-default bg-surface overflow-hidden">
+      <div className="rounded-xl border border-border-default bg-surface overflow-hidden table-enhanced">
         {isLoading ? (
           <div className="flex justify-center py-16">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
         ) : assets.length === 0 ? (
-          <div className="py-20 text-center">
-            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-primary/5">
-              <Monitor className="h-10 w-10 text-primary/40" strokeWidth={1.5} />
-            </div>
+          <div className="py-20 text-center animate-fade-in-up">
+            <EmptyAssetsIllustration className="mx-auto mb-6 h-32 w-32 animate-float" />
             <p className="text-base font-medium text-text-secondary">No hardware assets found</p>
             <p className="mt-1 text-sm text-text-muted">Get started by adding your first asset</p>
             <Button onClick={handleAdd} className="mt-4 bg-primary text-text-inverse hover:bg-primary-hover gap-2">
@@ -247,11 +245,11 @@ export function HardwareAssetsPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Name</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Serial</TableHead>
+                  <TableHead className="hidden md:table-cell">Type</TableHead>
+                  <TableHead className="hidden lg:table-cell">Serial</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Assigned To</TableHead>
-                  <TableHead>Location</TableHead>
+                  <TableHead className="hidden md:table-cell">Assigned To</TableHead>
+                  <TableHead className="hidden lg:table-cell">Location</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -266,13 +264,13 @@ export function HardwareAssetsPage() {
                         </span>
                       )}
                     </TableCell>
-                    <TableCell className="text-text-secondary">{asset.asset_type}</TableCell>
-                    <TableCell className="text-text-muted">{asset.serial_number || '—'}</TableCell>
+                    <TableCell className="hidden md:table-cell text-text-secondary">{asset.asset_type}</TableCell>
+                    <TableCell className="hidden lg:table-cell text-text-muted">{asset.serial_number || '—'}</TableCell>
                     <TableCell>{getStatusBadge(asset.status)}</TableCell>
-                    <TableCell className="text-text-secondary">
+                    <TableCell className="hidden md:table-cell text-text-secondary">
                       {asset.current_assignment?.employee?.full_name || '—'}
                     </TableCell>
-                    <TableCell className="text-text-muted">{asset.location || '—'}</TableCell>
+                    <TableCell className="hidden lg:table-cell text-text-muted">{asset.location || '—'}</TableCell>
                     <TableCell>
                       <div className="flex items-center justify-end gap-1">
                         {asset.status === 'assigned' ? (

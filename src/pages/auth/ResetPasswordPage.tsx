@@ -42,7 +42,7 @@ export function ResetPasswordPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="flex min-h-screen items-center justify-center bg-background auth-gradient-bg px-4">
       <div className="w-full max-w-md">
         <div className="mb-8 flex flex-col items-center">
           <div className="mb-2 flex items-center gap-2">
@@ -73,7 +73,7 @@ export function ResetPasswordPage() {
               )}
               <div className="space-y-4">
                 <div>
-                  <label className="mb-1.5 block text-[13px] font-medium text-text-primary">New Password</label>
+                  <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">New Password</label>
                   <div className="relative">
                     <input
                       type={show ? 'text' : 'password'}
@@ -88,7 +88,7 @@ export function ResetPasswordPage() {
                   </div>
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Confirm Password</label>
+                  <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Confirm Password</label>
                   <input
                     type={show ? 'text' : 'password'}
                     placeholder="Re-enter new password"

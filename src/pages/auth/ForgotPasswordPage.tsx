@@ -31,7 +31,7 @@ export function ForgotPasswordPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="flex min-h-screen items-center justify-center bg-background auth-gradient-bg px-4">
       <div className="w-full max-w-md">
         <div className="mb-8 flex flex-col items-center">
           <div className="mb-2 flex items-center gap-2">
@@ -65,7 +65,7 @@ export function ForgotPasswordPage() {
               </p>
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div>
-                  <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Email</label>
+                  <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Email</label>
                   <input
                     type="email"
                     autoComplete="email"

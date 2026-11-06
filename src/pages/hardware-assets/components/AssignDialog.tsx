@@ -115,7 +115,7 @@ export function AssignDialog({ open, onClose, asset, employees, onAssign, onRetu
               )}
             </div>
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Return Condition *</label>
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Return Condition *</label>
               <Select value={condition} onValueChange={(v) => { if (v) setCondition(v) }}>
                 <SelectTrigger className="w-full">
                   <SelectValue>{RETURN_CONDITIONS.find((c) => c.value === condition)?.label}</SelectValue>
@@ -128,7 +128,7 @@ export function AssignDialog({ open, onClose, asset, employees, onAssign, onRetu
               </Select>
             </div>
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Notes</label>
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Notes</label>
               <Textarea value={returnNotes} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setReturnNotes(e.target.value)} rows={2} placeholder="Any remarks on return" />
             </div>
             <div className="flex justify-end gap-2 pt-1">
@@ -142,7 +142,7 @@ export function AssignDialog({ open, onClose, asset, employees, onAssign, onRetu
           /* ---- ASSIGN ---- */
           <div className="space-y-4">
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Assign To *</label>
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Assign To *</label>
               <Select value={employeeId} onValueChange={(v) => { if (v) setEmployeeId(v) }}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select employee">
@@ -163,15 +163,15 @@ export function AssignDialog({ open, onClose, asset, employees, onAssign, onRetu
               </Select>
             </div>
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Assigned Date</label>
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Assigned Date</label>
               <Input type="date" value={assignedDate} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAssignedDate(e.target.value)} />
             </div>
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Accessories</label>
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Accessories</label>
               <Input value={accessories} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAccessories(e.target.value)} placeholder="e.g. Charger, bag, mouse" />
             </div>
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">Notes</label>
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Notes</label>
               <Textarea value={assignNotes} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setAssignNotes(e.target.value)} rows={2} placeholder="Any remarks" />
             </div>
             <div className="flex justify-end gap-2 pt-1">

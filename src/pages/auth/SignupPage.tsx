@@ -90,8 +90,8 @@ export function SignupPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="w-full max-w-md">
+    <div className="flex min-h-screen items-center justify-center bg-background auth-gradient-bg px-4">
+      <div className="w-full max-w-md animate-fade-in-up">
         {/* Logo */}
         <div className="mb-8 flex flex-col items-center">
           <div className="flex items-center gap-2 mb-2">
@@ -106,7 +106,7 @@ export function SignupPage() {
         </div>
 
         {/* Card */}
-        <div className="rounded-2xl border border-border-default bg-surface p-8">
+        <div className="rounded-2xl border border-border-default bg-surface p-5 sm:p-8">
           {error && (
             <div className="mb-4 rounded-lg bg-danger/10 px-4 py-3 text-sm text-danger">
               {error}
@@ -116,7 +116,7 @@ export function SignupPage() {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {/* Full Name */}
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">
                 Full Name
               </label>
               <input
@@ -133,7 +133,7 @@ export function SignupPage() {
 
             {/* Email */}
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">
                 Email
               </label>
               <input
@@ -150,7 +150,7 @@ export function SignupPage() {
 
             {/* Password */}
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">
                 Password
               </label>
               <div className="relative">
@@ -180,7 +180,7 @@ export function SignupPage() {
 
             {/* Confirm Password */}
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-text-primary">
+              <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">
                 Confirm Password
               </label>
               <input

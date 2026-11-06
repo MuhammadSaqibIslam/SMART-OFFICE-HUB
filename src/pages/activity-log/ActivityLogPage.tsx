@@ -31,6 +31,7 @@ import {
 } from '@/components/ui/dialog'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { getActivityLogs, deleteActivityLog, deleteActivityLogs, ENTITY_TYPES, type ActivityLogRow } from '@/services/activityLog'
+import { EmptyActivityIllustration } from '@/components/shared/Illustrations'
 
 const PAGE_SIZE = 50
 
@@ -145,14 +146,14 @@ export function ActivityLogPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 page-enter">
       {pageError && (
         <div className="rounded-lg bg-danger/10 px-4 py-3 text-sm text-danger">{pageError}</div>
       )}
 
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-3">
-        <div className="relative w-full max-w-xs">
+        <div className="relative w-full sm:max-w-xs">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
           <Input
             placeholder="Search activity..."
@@ -162,9 +163,9 @@ export function ActivityLogPage() {
           />
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[13px] text-text-muted">Module:</span>
+          <span className="text-[13px] text-text-muted hidden sm:inline">Module:</span>
           <Select value={entityFilter} onValueChange={(v) => { if (v) { setEntityFilter(v); setLimit(PAGE_SIZE) } }}>
-            <SelectTrigger className="w-48">
+            <SelectTrigger className="w-40 sm:w-48">
               <SelectValue>{entityFilter === 'all' ? 'All Modules' : ENTITY_TYPES.find((t) => t.value === entityFilter)?.label}</SelectValue>
             </SelectTrigger>
             <SelectContent>
@@ -185,10 +186,8 @@ export function ActivityLogPage() {
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
         ) : logs.length === 0 ? (
-          <div className="py-20 text-center">
-            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-primary/5">
-              <Activity className="h-10 w-10 text-primary/40" strokeWidth={1.5} />
-            </div>
+          <div className="py-20 text-center animate-fade-in-up">
+            <EmptyActivityIllustration className="mx-auto mb-6 h-32 w-32 animate-float" />
             <p className="text-base font-medium text-text-secondary">No activity yet</p>
             <p className="mt-1 text-sm text-text-muted">Actions across the app will appear here</p>
           </div>
@@ -206,7 +205,7 @@ export function ActivityLogPage() {
               />
               {selected.length > 0 ? (
                 <>
-                  <span className="text-[13px] font-medium text-text-primary">{selected.length} selected</span>
+                  <span className="text-[13px] sm:text-sm font-medium text-text-primary">{selected.length} selected</span>
                   <button
                     onClick={clearSelection}
                     className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-[13px] text-text-muted transition-colors hover:bg-surface-secondary hover:text-text-primary"
@@ -249,7 +248,7 @@ export function ActivityLogPage() {
                         </span>
                         <span title={relTime(log.created_at)}>{exactTime(log.created_at)}</span>
                         {log.entity_type && (
-                          <Badge className="border-0 bg-surface-secondary text-[11px] text-text-muted">
+                          <Badge className="border-0 bg-surface-secondary text-xs text-text-muted">
                             {ENTITY_TYPES.find((t) => t.value === log.entity_type)?.label || log.entity_type.replace('_', ' ')}
                           </Badge>
                         )}

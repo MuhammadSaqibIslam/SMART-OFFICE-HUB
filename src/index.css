@@ -227,3 +227,251 @@ body {
     @apply font-sans;
   }
 }
+
+/* ── Visual Enhancement Animations ── */
+
+@keyframes float-gentle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.7; }
+}
+
+.animate-float {
+  animation: float-gentle 4s ease-in-out infinite;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s ease-out both;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.4s ease-out both;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.35s ease-out both;
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 3s ease-in-out infinite;
+}
+
+/* Staggered entrance delays */
+.delay-75 { animation-delay: 75ms; }
+.delay-150 { animation-delay: 150ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+
+/* Respect reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .animate-float,
+  .animate-fade-in-up,
+  .animate-fade-in,
+  .animate-scale-in,
+  .animate-pulse-soft {
+    animation: none !important;
+  }
+}
+
+/* Auth page gradient mesh background */
+.auth-gradient-bg {
+  background:
+    radial-gradient(ellipse at 20% 50%, var(--color-primary)/0.06 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, var(--color-info)/0.04 0%, transparent 50%),
+    radial-gradient(ellipse at 60% 80%, var(--color-primary)/0.03 0%, transparent 50%);
+}
+
+/* Dashboard ambient background */
+.dashboard-bg {
+  position: relative;
+}
+.dashboard-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse at 0% 0%, var(--color-primary)/0.05 0%, transparent 40%),
+    radial-gradient(ellipse at 100% 100%, var(--color-info)/0.04 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 50%, var(--color-primary)/0.02 0%, transparent 60%);
+}
+.dashboard-bg > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* KPI card with top accent */
+.kpi-card {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.kpi-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  border-radius: 12px 12px 0 0;
+}
+.kpi-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+  border-color: var(--color-primary)/0.3;
+}
+.kpi-accent-primary::before { background: linear-gradient(90deg, var(--color-primary), var(--color-primary)/0.4); }
+.kpi-accent-success::before { background: linear-gradient(90deg, var(--color-success), var(--color-success)/0.4); }
+.kpi-accent-warning::before { background: linear-gradient(90deg, var(--color-warning), var(--color-warning)/0.4); }
+.kpi-accent-danger::before { background: linear-gradient(90deg, var(--color-danger), var(--color-danger)/0.4); }
+.kpi-accent-info::before { background: linear-gradient(90deg, var(--color-info), var(--color-info)/0.4); }
+
+/* Sidebar active nav accent bar */
+.sidebar-nav-active {
+  position: relative;
+}
+.sidebar-nav-active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--color-primary);
+}
+
+/* Sidebar logo gradient */
+.sidebar-logo-gradient {
+  background: linear-gradient(135deg, var(--color-primary)/0.08 0%, transparent 60%);
+}
+
+/* Card container enhanced shadow */
+.card-enhanced {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
+  transition: box-shadow 0.25s ease;
+}
+.card-enhanced:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04);
+}
+
+/* Table container */
+.table-enhanced {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+}
+
+/* Section heading accent */
+.section-heading-accent {
+  position: relative;
+  padding-left: 12px;
+}
+.section-heading-accent::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 2px;
+  bottom: 2px;
+  width: 3px;
+  border-radius: 2px;
+  background: linear-gradient(to bottom, var(--color-primary), var(--color-primary)/0.3);
+}
+
+/* Gradient icon container */
+.icon-gradient-primary {
+  background: linear-gradient(135deg, var(--color-primary)/0.15 0%, var(--color-primary)/0.05 100%);
+}
+.icon-gradient-success {
+  background: linear-gradient(135deg, var(--color-success)/0.15 0%, var(--color-success)/0.05 100%);
+}
+.icon-gradient-warning {
+  background: linear-gradient(135deg, var(--color-warning)/0.15 0%, var(--color-warning)/0.05 100%);
+}
+.icon-gradient-danger {
+  background: linear-gradient(135deg, var(--color-danger)/0.15 0%, var(--color-danger)/0.05 100%);
+}
+.icon-gradient-info {
+  background: linear-gradient(135deg, var(--color-info)/0.15 0%, var(--color-info)/0.05 100%);
+}
+
+/* Table row hover */
+.table-row-hover {
+  transition: background-color 0.15s ease;
+}
+
+/* Dashboard bottom card header gradient */
+.card-header-accent {
+  background: linear-gradient(to right, var(--color-primary)/0.04, transparent);
+}
+
+/* Bottom card colored left border */
+.card-left-warning {
+  border-left: 3px solid var(--color-warning);
+}
+.card-left-info {
+  border-left: 3px solid var(--color-info);
+}
+.card-left-primary {
+  border-left: 3px solid var(--color-primary);
+}
+
+/* Page content entrance */
+.page-enter {
+  animation: fade-in-up 0.4s ease-out both;
+}
+
+/* Subtle dot grid pattern for large empty areas */
+.dot-pattern {
+  background-image: radial-gradient(var(--color-border-default) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Primary button gradient */
+.btn-gradient-primary {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
+  transition: all 0.2s ease;
+}
+.btn-gradient-primary:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 4px 12px var(--color-primary)/0.25;
+}
+
+/* Notification badge pulse */
+@keyframes badge-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 var(--color-danger)/0.4; }
+  50% { box-shadow: 0 0 0 4px var(--color-danger)/0; }
+}
+.badge-pulse {
+  animation: badge-pulse 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .badge-pulse,
+  .page-enter {
+    animation: none !important;
+  }
+}

@@ -9,7 +9,6 @@ import {
   Trash2,
   Loader2,
   AlertTriangle,
-  Package,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -50,6 +49,7 @@ import {
   stockOut,
 } from '@/services/inventory'
 import type { InventoryItem, InventoryCategory } from '@/types/database'
+import { EmptyInventoryIllustration } from '@/components/shared/Illustrations'
 
 type StockStatus = 'all' | 'low' | 'in_stock' | 'out_of_stock'
 
@@ -190,7 +190,7 @@ export function InventoryPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 page-enter">
       {/* Error */}
       {pageError && (
         <div className="rounded-lg bg-danger/10 px-4 py-3 text-sm text-danger">{pageError}</div>
@@ -198,7 +198,7 @@ export function InventoryPage() {
 
       {/* Filters + Add Button */}
       <div className="flex flex-wrap items-center gap-3">
-        <div className="relative w-full max-w-xs">
+        <div className="relative w-full sm:max-w-xs">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
           <Input
             placeholder="Search by item name..."
@@ -208,10 +208,12 @@ export function InventoryPage() {
           />
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[13px] text-text-muted">Category:</span>
+          <span className="text-[13px] text-text-muted hidden sm:inline">Category:</span>
           <Select value={categoryFilter} onValueChange={(v) => { if (v) setCategoryFilter(v) }}>
-            <SelectTrigger className="w-44">
-              <SelectValue />
+            <SelectTrigger className="w-36 sm:w-44">
+              <SelectValue>
+                {categoryFilter === 'all' ? 'All Categories' : categories.find(c => c.id === categoryFilter)?.name || categoryFilter}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Categories</SelectItem>
@@ -222,10 +224,12 @@ export function InventoryPage() {
           </Select>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[13px] text-text-muted">Stock:</span>
+          <span className="text-[13px] text-text-muted hidden sm:inline">Stock:</span>
           <Select value={stockFilter} onValueChange={(v) => { if (v) setStockFilter(v as StockStatus) }}>
-            <SelectTrigger className="w-40">
-              <SelectValue />
+            <SelectTrigger className="w-32 sm:w-40">
+              <SelectValue>
+                {{ all: 'All Status', in_stock: 'In Stock', low: 'Low Stock', out_of_stock: 'Out of Stock' }[stockFilter]}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Status</SelectItem>
@@ -240,22 +244,20 @@ export function InventoryPage() {
             onClick={handleAdd}
             className="bg-primary text-text-inverse hover:bg-primary-hover gap-2"
           >
-            <Plus className="h-4 w-4" /> Add Item
+            <Plus className="h-4 w-4" /> <span className="hidden sm:inline">Add Item</span><span className="sm:hidden">Add</span>
           </Button>
         </div>
       </div>
 
       {/* Table */}
-      <div className="rounded-xl border border-border-default bg-surface overflow-hidden">
+      <div className="rounded-xl border border-border-default bg-surface overflow-hidden table-enhanced">
         {isLoading ? (
           <div className="flex justify-center py-16">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
         ) : items.length === 0 ? (
-          <div className="py-20 text-center">
-            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-primary/5">
-              <Package className="h-10 w-10 text-primary/40" strokeWidth={1.5} />
-            </div>
+          <div className="py-20 text-center animate-fade-in-up">
+            <EmptyInventoryIllustration className="mx-auto mb-6 h-32 w-32 animate-float" />
             <p className="text-base font-medium text-text-secondary">No inventory items found</p>
             <p className="mt-1 text-sm text-text-muted">Get started by adding your first inventory item</p>
             <Button
@@ -271,11 +273,11 @@ export function InventoryPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Name</TableHead>
-                  <TableHead>Category</TableHead>
+                  <TableHead className="hidden md:table-cell">Category</TableHead>
                   <TableHead>Quantity</TableHead>
-                  <TableHead>Min Stock</TableHead>
+                  <TableHead className="hidden lg:table-cell">Min Stock</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Location</TableHead>
+                  <TableHead className="hidden lg:table-cell">Location</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -283,11 +285,11 @@ export function InventoryPage() {
                 {items.map(item => (
                   <TableRow key={item.id} className="hover:bg-surface-secondary/50">
                     <TableCell className="font-medium text-text-primary">{item.name}</TableCell>
-                    <TableCell className="text-text-secondary">{item.category?.name || '—'}</TableCell>
+                    <TableCell className="hidden md:table-cell text-text-secondary">{item.category?.name || '—'}</TableCell>
                     <TableCell className="tabular-nums font-medium">{item.quantity} {item.unit}</TableCell>
-                    <TableCell className="tabular-nums text-text-muted">{item.min_stock_threshold}</TableCell>
+                    <TableCell className="hidden lg:table-cell tabular-nums text-text-muted">{item.min_stock_threshold}</TableCell>
                     <TableCell>{getStockBadge(item)}</TableCell>
-                    <TableCell className="text-text-muted">{item.location || '—'}</TableCell>
+                    <TableCell className="hidden lg:table-cell text-text-muted">{item.location || '—'}</TableCell>
                     <TableCell>
                       <div className="flex items-center justify-end gap-1">
                         <Tooltip>
