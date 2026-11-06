@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard,
   Package,
@@ -29,6 +29,7 @@ interface SidebarProps {
 }
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
+  const navigate = useNavigate()
   return (
     <>
       {/* Backdrop (mobile only) */}
@@ -46,7 +47,10 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         }`}
       >
         {/* Logo */}
-        <div className="flex h-14 sm:h-16 lg:h-[4.25rem] items-center gap-2 border-b border-border-default px-4 sm:px-6 sidebar-logo-gradient">
+        <div
+          onClick={() => { navigate('/'); onClose() }}
+          className="flex h-14 sm:h-16 lg:h-[4.25rem] items-center gap-2 border-b border-border-default px-4 sm:px-6 sidebar-logo-gradient cursor-pointer"
+        >
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white shadow-sm">
             <Package className="h-4.5 w-4.5" strokeWidth={2.2} />
           </div>
