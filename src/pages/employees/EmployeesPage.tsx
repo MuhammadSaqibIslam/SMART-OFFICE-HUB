@@ -43,6 +43,7 @@ import {
 import { mergeDepartments } from '@/lib/departments'
 import type { Employee } from '@/types/database'
 import { EmptyEmployeesIllustration } from '@/components/shared/Illustrations'
+import { getErrorMessage } from '@/lib/errors'
 
 type StatusFilter = 'all' | 'active' | 'inactive'
 
@@ -60,6 +61,7 @@ export function EmployeesPage() {
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState<Employee | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
   const [pageError, setPageError] = useState<string | null>(null)
 
   // Departments for the filter (derived from loaded data)
@@ -131,6 +133,7 @@ export function EmployeesPage() {
   const handleDeleteConfirm = async () => {
     if (!deleteTarget) return
     setIsDeleting(true)
+    setDeleteError(null)
     try {
       await deleteEmployee(deleteTarget.id, deleteTarget.full_name)
       fetchData()
@@ -138,12 +141,14 @@ export function EmployeesPage() {
       setDeleteTarget(null)
     } catch (error) {
       console.error('Delete failed:', error)
+      setDeleteError(getErrorMessage(error, 'Failed to delete. Please try again.'))
     } finally {
       setIsDeleting(false)
     }
   }
 
   const handleDeleteClose = () => {
+    setDeleteError(null)
     setDeleteOpen(false)
     setDeleteTarget(null)
   }
@@ -321,6 +326,9 @@ export function EmployeesPage() {
               Are you sure you want to delete <strong>{deleteTarget?.full_name}</strong>? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
+          {deleteError && (
+            <div className="rounded-lg bg-danger/10 px-3 py-2 text-sm text-danger">{deleteError}</div>
+          )}
           <div className="flex justify-end gap-2 pt-2">
             <Button variant="outline" onClick={handleDeleteClose}>Cancel</Button>
             <Button

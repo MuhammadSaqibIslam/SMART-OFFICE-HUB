@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import type { InventoryItem, InventoryCategory } from '@/types/database'
+import { getErrorMessage } from '@/lib/errors'
 
 const schema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -100,7 +101,7 @@ export function InventoryFormDialog({ open, onClose, onSubmit, item, categories 
       await onSubmit(data as FormData)
       onClose()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save item')
+      setError(getErrorMessage(err, 'Failed to save item'))
     }
   }
 

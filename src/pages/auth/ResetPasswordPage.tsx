@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Package, Loader2, Eye, EyeOff, CheckCircle2 } from 'lucide-react'
 import { supabase } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
+import { getErrorMessage } from '@/lib/errors'
 
 export function ResetPasswordPage() {
   const navigate = useNavigate()
@@ -35,7 +36,7 @@ export function ResetPasswordPage() {
       await supabase.auth.signOut()
       setTimeout(() => navigate('/login'), 2000)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to reset password')
+      setError(getErrorMessage(err, 'Failed to reset password'))
     } finally {
       setSubmitting(false)
     }

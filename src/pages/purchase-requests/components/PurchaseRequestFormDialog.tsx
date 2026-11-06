@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dialog'
 import type { InventoryItem } from '@/types/database'
 import type { PRInput, PurchaseRequestWithItems } from '@/services/purchaseRequests'
+import { getErrorMessage } from '@/lib/errors'
 
 interface Row {
   item_id: string | null
@@ -88,7 +89,7 @@ export function PurchaseRequestFormDialog({ open, onClose, onSubmit, request, in
       })
       onClose()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save purchase request')
+      setError(getErrorMessage(err, 'Failed to save purchase request'))
     } finally {
       setSubmitting(false)
     }

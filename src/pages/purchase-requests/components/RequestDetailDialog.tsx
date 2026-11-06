@@ -16,6 +16,7 @@ import {
   type PRStatus,
   type PurchaseRequestWithItems,
 } from '@/services/purchaseRequests'
+import { getErrorMessage } from '@/lib/errors'
 
 interface Props {
   open: boolean
@@ -41,7 +42,7 @@ export function RequestDetailDialog({ open, onClose, request, onChangeStatus }: 
       await onChangeStatus(s)
       onClose()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update status')
+      setError(getErrorMessage(err, 'Failed to update status'))
     } finally {
       setBusy(null)
     }

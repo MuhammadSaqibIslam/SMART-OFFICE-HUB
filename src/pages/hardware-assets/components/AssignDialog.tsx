@@ -20,6 +20,7 @@ import {
 import type { Employee } from '@/types/database'
 import type { AssetWithAssignment } from '@/services/assets'
 import { RETURN_CONDITIONS } from '@/lib/assetTypes'
+import { getErrorMessage } from '@/lib/errors'
 
 interface Props {
   open: boolean
@@ -70,7 +71,7 @@ export function AssignDialog({ open, onClose, asset, employees, onAssign, onRetu
       })
       onClose()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to assign asset')
+      setError(getErrorMessage(err, 'Failed to assign asset'))
     } finally {
       setSubmitting(false)
     }
@@ -84,7 +85,7 @@ export function AssignDialog({ open, onClose, asset, employees, onAssign, onRetu
       await onReturn(asset.current_assignment.id, { return_condition: condition, notes: returnNotes })
       onClose()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to return asset')
+      setError(getErrorMessage(err, 'Failed to return asset'))
     } finally {
       setSubmitting(false)
     }

@@ -22,6 +22,8 @@ import {
 } from '@/components/ui/select'
 import type { Employee } from '@/types/database'
 import { DEFAULT_DEPARTMENTS } from '@/lib/departments'
+import { getErrorMessage } from '@/lib/errors'
+import { PHOTO_ACCEPT, PHOTO_TYPES, PHOTO_TYPE_ERROR } from '@/lib/images'
 
 const schema = z.object({
   full_name: z.string().min(1, 'Full name is required'),
@@ -116,8 +118,8 @@ export function EmployeeFormDialog({ open, onClose, onSubmit, employee, departme
   const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-    if (!file.type.startsWith('image/')) {
-      setError('Please choose an image file')
+    if (!PHOTO_TYPES.includes(file.type)) {
+      setError(PHOTO_TYPE_ERROR)
       return
     }
     if (file.size > 5 * 1024 * 1024) {
@@ -130,7 +132,7 @@ export function EmployeeFormDialog({ open, onClose, onSubmit, employee, departme
       const url = await uploadEmployeePhoto(file)
       setValue('avatar_url', url)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to upload photo')
+      setError(getErrorMessage(err, 'Failed to upload photo'))
     } finally {
       setUploading(false)
       if (fileInputRef.current) fileInputRef.current.value = ''
@@ -143,7 +145,7 @@ export function EmployeeFormDialog({ open, onClose, onSubmit, employee, departme
       await onSubmit(data as FormData)
       onClose()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save employee')
+      setError(getErrorMessage(err, 'Failed to save employee'))
     }
   }
 
@@ -164,7 +166,7 @@ export function EmployeeFormDialog({ open, onClose, onSubmit, employee, departme
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/*"
+              accept={PHOTO_ACCEPT}
               className="hidden"
               onChange={handlePhotoChange}
             />

@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase/client'
 import type { Employee } from '@/types/database'
+import { ilikeAny } from '@/lib/postgrest'
 
 const PHOTO_BUCKET = 'employee-photos'
 
@@ -36,9 +37,7 @@ export async function getEmployees(filters?: {
     .order('created_at', { ascending: false })
 
   if (filters?.search) {
-    query = query.or(
-      `full_name.ilike.%${filters.search}%,employee_id.ilike.%${filters.search}%,email.ilike.%${filters.search}%`
-    )
+    query = query.or(ilikeAny(['full_name', 'employee_id', 'email'], filters.search))
   }
   if (filters?.department && filters.department !== 'all') {
     query = query.eq('department', filters.department)
@@ -88,6 +87,16 @@ export async function updateEmployee(id: string, input: EmployeeInput) {
 }
 
 export async function deleteEmployee(id: string, fullName: string) {
+  const { count, error: assignmentError } = await supabase
+    .from('asset_assignments')
+    .select('id', { count: 'exact', head: true })
+    .eq('employee_id', id)
+    .eq('status', 'active')
+  if (assignmentError) throw assignmentError
+  if (count) {
+    throw new Error(`${fullName} still has ${count} assigned device${count > 1 ? 's' : ''}. Return ${count > 1 ? 'them' : 'it'} before deleting this employee.`)
+  }
+
   const { error } = await supabase
     .from('employees')
     .delete()

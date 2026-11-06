@@ -22,6 +22,7 @@ import {
 import type { HardwareAsset } from '@/types/database'
 import type { AssetInput } from '@/services/assets'
 import { DEFAULT_ASSET_TYPES, ASSET_STATUSES } from '@/lib/assetTypes'
+import { getErrorMessage } from '@/lib/errors'
 
 const schema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -142,7 +143,7 @@ export function AssetFormDialog({ open, onClose, onSubmit, asset, assetTypes = [
       await onSubmit(input)
       onClose()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save asset')
+      setError(getErrorMessage(err, 'Failed to save asset'))
     }
   }
 

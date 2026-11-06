@@ -22,7 +22,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
           <p className="text-xs font-semibold text-text-primary mb-1.5">
             {isUser ? 'You' : 'Ask AI'}
           </p>
-          <div className="text-sm text-text-secondary leading-relaxed whitespace-pre-wrap">
+          <div className="text-sm text-text-secondary leading-relaxed whitespace-pre-wrap [overflow-wrap:anywhere]">
             {message.content}
           </div>
         </div>

@@ -59,7 +59,7 @@ export async function getInventoryItems(filters?: {
   let items = data as InventoryItem[]
 
   if (filters?.stock_status === 'low') {
-    items = items.filter(i => i.quantity > 0 && i.quantity <= i.min_stock_threshold)
+    items = items.filter(i => i.quantity <= i.min_stock_threshold)
   } else if (filters?.stock_status === 'out_of_stock') {
     items = items.filter(i => i.quantity === 0)
   } else if (filters?.stock_status === 'in_stock') {

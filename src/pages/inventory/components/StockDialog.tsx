@@ -11,6 +11,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import type { InventoryItem } from '@/types/database'
+import { getErrorMessage } from '@/lib/errors'
 
 interface Props {
   open: boolean
@@ -53,7 +54,7 @@ export function StockDialog({ open, onClose, type, item, onSubmit }: Props) {
       await onSubmit(quantity, notes || undefined)
       onClose()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
+      setError(getErrorMessage(err, 'An error occurred'))
     } finally {
       setIsSubmitting(false)
     }

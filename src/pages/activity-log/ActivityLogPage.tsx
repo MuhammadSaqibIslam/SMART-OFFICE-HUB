@@ -32,6 +32,7 @@ import {
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { getActivityLogs, deleteActivityLog, deleteActivityLogs, ENTITY_TYPES, type ActivityLogRow } from '@/services/activityLog'
 import { EmptyActivityIllustration } from '@/components/shared/Illustrations'
+import { getErrorMessage } from '@/lib/errors'
 
 const PAGE_SIZE = 50
 
@@ -103,7 +104,7 @@ export function ActivityLogPage() {
     } catch (error) {
       console.error('Delete failed:', error)
       setDeleteTarget(null)
-      setPageError(error instanceof Error ? error.message : 'Delete failed')
+      setPageError(getErrorMessage(error, 'Delete failed'))
     } finally {
       setBusy(false)
     }
@@ -132,7 +133,7 @@ export function ActivityLogPage() {
     } catch (error) {
       console.error('Bulk delete failed:', error)
       setBulkOpen(false)
-      setPageError(error instanceof Error ? error.message : 'Delete failed')
+      setPageError(getErrorMessage(error, 'Delete failed'))
     } finally {
       setBusy(false)
     }

@@ -16,6 +16,7 @@ import { ActivityLogPage } from '@/pages/activity-log/ActivityLogPage'
 import { SettingsPage } from '@/pages/settings/SettingsPage'
 import { AskAIPage } from '@/pages/ask-ai/AskAIPage'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import { NotFoundPage } from '@/pages/NotFoundPage'
 
 function App() {
   return (
@@ -47,6 +48,8 @@ function App() {
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="/ask-ai" element={<AskAIPage />} />
             </Route>
+
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </AuthProvider>
       </BrowserRouter>

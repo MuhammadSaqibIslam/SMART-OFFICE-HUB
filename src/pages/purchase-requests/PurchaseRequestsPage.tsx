@@ -49,6 +49,7 @@ import {
 import { getInventoryItems } from '@/services/inventory'
 import type { InventoryItem } from '@/types/database'
 import { EmptyPurchaseIllustration } from '@/components/shared/Illustrations'
+import { getErrorMessage } from '@/lib/errors'
 
 export function PurchaseRequestsPage() {
   const [requests, setRequests] = useState<PurchaseRequestWithItems[]>([])
@@ -65,6 +66,7 @@ export function PurchaseRequestsPage() {
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState<PurchaseRequestWithItems | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
   const [pageError, setPageError] = useState<string | null>(null)
 
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -113,6 +115,7 @@ export function PurchaseRequestsPage() {
   const handleDeleteConfirm = async () => {
     if (!deleteTarget) return
     setIsDeleting(true)
+    setDeleteError(null)
     try {
       await deletePurchaseRequest(deleteTarget.id, deleteTarget.request_number)
       fetchData()
@@ -120,12 +123,13 @@ export function PurchaseRequestsPage() {
       setDeleteTarget(null)
     } catch (error) {
       console.error('Delete failed:', error)
+      setDeleteError(getErrorMessage(error, 'Failed to delete. Please try again.'))
     } finally {
       setIsDeleting(false)
     }
   }
 
-  const handleDeleteClose = () => { setDeleteOpen(false); setDeleteTarget(null) }
+  const handleDeleteClose = () => { setDeleteError(null); setDeleteOpen(false); setDeleteTarget(null) }
 
   const itemsSummary = (r: PurchaseRequestWithItems) => {
     const items = r.purchase_request_items || []
@@ -276,6 +280,9 @@ export function PurchaseRequestsPage() {
               Are you sure you want to delete <strong>{deleteTarget?.request_number}</strong>? Its items will also be removed. This cannot be undone.
             </DialogDescription>
           </DialogHeader>
+          {deleteError && (
+            <div className="rounded-lg bg-danger/10 px-3 py-2 text-sm text-danger">{deleteError}</div>
+          )}
           <div className="flex justify-end gap-2 pt-2">
             <Button variant="outline" onClick={handleDeleteClose}>Cancel</Button>
             <Button onClick={handleDeleteConfirm} disabled={isDeleting} className="bg-danger text-white hover:bg-danger/90">

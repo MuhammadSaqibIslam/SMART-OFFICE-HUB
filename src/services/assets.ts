@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase/client'
 import type { HardwareAsset, AssetHistory, Employee } from '@/types/database'
+import { ilikeAny } from '@/lib/postgrest'
 
 export type AssetStatus = 'available' | 'assigned' | 'under_maintenance' | 'missing' | 'retired'
 
@@ -47,9 +48,7 @@ export async function getAssets(filters?: {
     .order('created_at', { ascending: false })
 
   if (filters?.search) {
-    query = query.or(
-      `name.ilike.%${filters.search}%,serial_number.ilike.%${filters.search}%,brand.ilike.%${filters.search}%,model.ilike.%${filters.search}%`
-    )
+    query = query.or(ilikeAny(['name', 'serial_number', 'brand', 'model'], filters.search))
   }
   if (filters?.asset_type && filters.asset_type !== 'all') {
     query = query.eq('asset_type', filters.asset_type)

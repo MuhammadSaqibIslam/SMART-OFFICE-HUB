@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import {
   User as UserIcon,
   Palette,
+  Eye,
+  EyeOff,
   Lock,
   Tags,
   Plus,
@@ -20,6 +22,8 @@ import { supabase } from '@/lib/supabase/client'
 import { getCategories, createCategory, deleteCategory } from '@/services/inventory'
 import { uploadProfileAvatar } from '@/services/profile'
 import type { InventoryCategory } from '@/types/database'
+import { getErrorMessage } from '@/lib/errors'
+import { PHOTO_ACCEPT, PHOTO_TYPES, PHOTO_TYPE_ERROR } from '@/lib/images'
 
 function Section({ icon: Icon, title, description, children }: {
   icon: typeof UserIcon
@@ -39,6 +43,29 @@ function Section({ icon: Icon, title, description, children }: {
         </div>
       </div>
       {children}
+    </div>
+  )
+}
+
+function PasswordInput({ value, onChange }: { value: string; onChange: (value: string) => void }) {
+  const [show, setShow] = useState(false)
+  return (
+    <div className="relative">
+      <Input
+        type={show ? 'text' : 'password'}
+        value={value}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
+        placeholder="••••••••"
+        className="pr-10"
+      />
+      <button
+        type="button"
+        onClick={() => setShow(!show)}
+        aria-label={show ? 'Hide password' : 'Show password'}
+        className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-secondary"
+      >
+        {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+      </button>
     </div>
   )
 }
@@ -77,14 +104,14 @@ export function SettingsPage() {
   const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-    if (!file.type.startsWith('image/')) { setProfileMsg({ ok: false, text: 'Please choose an image file' }); return }
+    if (!PHOTO_TYPES.includes(file.type)) { setProfileMsg({ ok: false, text: PHOTO_TYPE_ERROR }); return }
     if (file.size > 5 * 1024 * 1024) { setProfileMsg({ ok: false, text: 'Image must be smaller than 5 MB' }); return }
     setProfileMsg(null)
     setUploading(true)
     try {
       setAvatarUrl(await uploadProfileAvatar(file))
     } catch (err) {
-      setProfileMsg({ ok: false, text: err instanceof Error ? err.message : 'Failed to upload photo' })
+      setProfileMsg({ ok: false, text: getErrorMessage(err, 'Failed to upload photo') })
     } finally {
       setUploading(false)
       if (fileInputRef.current) fileInputRef.current.value = ''
@@ -104,7 +131,7 @@ export function SettingsPage() {
       await refreshProfile()
       setProfileMsg({ ok: true, text: 'Profile updated' })
     } catch (err) {
-      setProfileMsg({ ok: false, text: err instanceof Error ? err.message : 'Failed to update profile' })
+      setProfileMsg({ ok: false, text: getErrorMessage(err, 'Failed to update profile') })
     } finally {
       setSavingProfile(false)
     }
@@ -121,7 +148,7 @@ export function SettingsPage() {
       setNewPass(''); setConfirmPass('')
       setPassMsg({ ok: true, text: 'Password changed' })
     } catch (err) {
-      setPassMsg({ ok: false, text: err instanceof Error ? err.message : 'Failed to change password' })
+      setPassMsg({ ok: false, text: getErrorMessage(err, 'Failed to change password') })
     } finally {
       setSavingPass(false)
     }
@@ -136,7 +163,7 @@ export function SettingsPage() {
       setNewCategory('')
       setCategories(await getCategories())
     } catch (err) {
-      setCatMsg({ ok: false, text: err instanceof Error ? err.message : 'Failed to add category' })
+      setCatMsg({ ok: false, text: getErrorMessage(err, 'Failed to add category') })
     } finally {
       setCatBusy(false)
     }
@@ -148,7 +175,7 @@ export function SettingsPage() {
       await deleteCategory(cat.id, cat.name)
       setCategories(await getCategories())
     } catch (err) {
-      setCatMsg({ ok: false, text: err instanceof Error ? err.message : 'Failed to delete category' })
+      setCatMsg({ ok: false, text: getErrorMessage(err, 'Failed to delete category') })
     }
   }
 
@@ -166,7 +193,7 @@ export function SettingsPage() {
         <div className="space-y-3">
           {/* Avatar */}
           <div className="flex items-center gap-4">
-            <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoChange} />
+            <input ref={fileInputRef} type="file" accept={PHOTO_ACCEPT} className="hidden" onChange={handlePhotoChange} />
             <button
               type="button"
               onClick={() => { if (!uploading) fileInputRef.current?.click() }}
@@ -252,11 +279,11 @@ export function SettingsPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">New Password</label>
-              <Input type="password" value={newPass} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewPass(e.target.value)} placeholder="••••••••" />
+              <PasswordInput value={newPass} onChange={setNewPass} />
             </div>
             <div>
               <label className="mb-1.5 block text-[13px] sm:text-sm font-medium text-text-primary">Confirm Password</label>
-              <Input type="password" value={confirmPass} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfirmPass(e.target.value)} placeholder="••••••••" />
+              <PasswordInput value={confirmPass} onChange={setConfirmPass} />
             </div>
           </div>
           <div className="flex items-center gap-3">

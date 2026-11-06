@@ -67,10 +67,18 @@ export async function getPurchaseRequests(filters?: { search?: string; status?: 
 }
 
 async function nextRequestNumber(): Promise<string> {
-  const { count } = await supabase
+  // Based on the highest existing number: counting rows would reuse a number after a delete.
+  const { data, error } = await supabase
     .from('purchase_requests')
-    .select('*', { count: 'exact', head: true })
-  return `PR-${String((count || 0) + 1).padStart(4, '0')}`
+    .select('request_number')
+    .like('request_number', 'PR-%')
+    .order('created_at', { ascending: false })
+  if (error) throw error
+  const highest = (data || []).reduce((max, row) => {
+    const match = /^PR-(\d+)$/.exec(row.request_number || '')
+    return match ? Math.max(max, Number(match[1])) : max
+  }, 0)
+  return `PR-${String(highest + 1).padStart(4, '0')}`
 }
 
 export async function createPurchaseRequest(input: PRInput) {
@@ -90,9 +98,10 @@ export async function createPurchaseRequest(input: PRInput) {
 }
 
 export async function updatePurchaseRequest(id: string, input: PRInput) {
+  const requestNumber = input.request_number?.trim()
   const { data: pr, error } = await supabase
     .from('purchase_requests')
-    .update({ request_number: input.request_number?.trim() || null, notes: input.notes || null })
+    .update({ ...(requestNumber ? { request_number: requestNumber } : {}), notes: input.notes || null })
     .eq('id', id)
     .select('*')
     .single()

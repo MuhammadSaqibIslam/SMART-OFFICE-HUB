@@ -43,6 +43,7 @@ export function DashboardPage() {
   const [recentActivity, setRecentActivity] = useState<ActivityLog[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [pageError, setPageError] = useState<string | null>(null)
+  const [failed, setFailed] = useState({ inventory: false, purchases: false, assets: false, activity: false })
 
   useEffect(() => {
     fetchDashboardData()
@@ -63,6 +64,20 @@ export function DashboardPage() {
         supabase.from('hardware_assets').select('*'),
         supabase.from('activity_logs').select('*').order('created_at', { ascending: false }).limit(10),
       ])
+
+      // Supabase returns query failures in `error` instead of throwing, so track
+      // each source: a failed one shows as unavailable, the others still load.
+      const failures = {
+        inventory: !!inventoryRes.error,
+        purchases: !!purchaseRes.error,
+        assets: !!assetsRes.error,
+        activity: !!activityRes.error,
+      }
+      setFailed(failures)
+      if (Object.values(failures).some(Boolean)) {
+        console.error('Error fetching dashboard data:', inventoryRes.error, purchaseRes.error, assetsRes.error, activityRes.error)
+        setPageError('Failed to load dashboard data')
+      }
 
       const inventoryItems = (inventoryRes.data || []) as InventoryItem[]
       const totalStock = inventoryItems.reduce((sum, item) => sum + item.quantity, 0)
@@ -88,6 +103,7 @@ export function DashboardPage() {
       setRecentActivity((activityRes.data || []) as ActivityLog[])
     } catch (error) {
       console.error('Error fetching dashboard data:', error)
+      setFailed({ inventory: true, purchases: true, assets: true, activity: true })
       setPageError('Failed to load dashboard data')
     } finally {
       setIsLoading(false)
@@ -119,28 +135,28 @@ export function DashboardPage() {
         <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-4">
           <KpiCard
             title="Total Items"
-            value={stats.totalInventoryItems}
+            value={failed.inventory ? null : stats.totalInventoryItems}
             icon={<Package className="h-5 w-5" />}
             color="primary"
             subtitle="Registered items"
           />
           <KpiCard
             title="Available Stock"
-            value={stats.totalStock}
+            value={failed.inventory ? null : stats.totalStock}
             icon={<TrendingUp className="h-5 w-5" />}
             color="success"
             subtitle="Units in stock"
           />
           <KpiCard
             title="Low Stock"
-            value={stats.lowStockItems}
+            value={failed.inventory ? null : stats.lowStockItems}
             icon={<AlertTriangle className="h-5 w-5" />}
             color="warning"
             subtitle="Need attention"
           />
           <KpiCard
             title="Pending Requests"
-            value={stats.pendingPurchaseRequests}
+            value={failed.purchases ? null : stats.pendingPurchaseRequests}
             icon={<ShoppingCart className="h-5 w-5" />}
             color="info"
             subtitle="Awaiting action"
@@ -159,28 +175,28 @@ export function DashboardPage() {
         <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-4">
           <KpiCard
             title="Total Assets"
-            value={stats.totalAssets}
+            value={failed.assets ? null : stats.totalAssets}
             icon={<Monitor className="h-5 w-5" />}
             color="primary"
             subtitle="All devices"
           />
           <KpiCard
             title="Available"
-            value={stats.availableAssets}
+            value={failed.assets ? null : stats.availableAssets}
             icon={<ArrowUpRight className="h-5 w-5" />}
             color="success"
             subtitle="Ready to assign"
           />
           <KpiCard
             title="Assigned"
-            value={stats.assignedAssets}
+            value={failed.assets ? null : stats.assignedAssets}
             icon={<Users className="h-5 w-5" />}
             color="info"
             subtitle="In use"
           />
           <KpiCard
             title="Missing"
-            value={stats.missingAssets}
+            value={failed.assets ? null : stats.missingAssets}
             icon={<ArrowDownRight className="h-5 w-5" />}
             color="danger"
             subtitle="Not accounted"
@@ -204,7 +220,9 @@ export function DashboardPage() {
             </Link>
           </div>
           <div className="flex-1 overflow-y-auto p-4">
-            {lowStockList.length === 0 ? (
+            {failed.inventory ? (
+              <SectionUnavailable />
+            ) : lowStockList.length === 0 ? (
               <div className="flex flex-col items-center py-4 text-center">
                 <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-success/10">
                   <TrendingUp className="h-5 w-5 text-success" />
@@ -243,7 +261,9 @@ export function DashboardPage() {
             </Link>
           </div>
           <div className="flex-1 overflow-y-auto p-4">
-            {recentActivity.length === 0 ? (
+            {failed.activity ? (
+              <SectionUnavailable />
+            ) : recentActivity.length === 0 ? (
               <div className="flex flex-col items-center py-4 text-center">
                 <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-surface-secondary">
                   <Clock className="h-5 w-5 text-text-muted" />
@@ -283,7 +303,7 @@ export function DashboardPage() {
             </div>
             <h3 className="text-sm lg:text-base font-semibold text-text-primary">Quick Actions</h3>
           </div>
-          <div className="space-y-1 p-3">
+          <div className="flex-1 space-y-1 overflow-y-auto p-3">
             <QuickAction to="/inventory" icon={<Plus className="h-4 w-4" />} label="Add Inventory Item" desc="Add new consumable" />
             <QuickAction to="/hardware-assets" icon={<Monitor className="h-4 w-4" />} label="Register Asset" desc="Register new device" />
             <QuickAction to="/employees" icon={<Users className="h-4 w-4" />} label="Add Employee" desc="Create employee record" />
@@ -297,6 +317,17 @@ export function DashboardPage() {
 
 // ---- Sub-components ----
 
+function SectionUnavailable() {
+  return (
+    <div className="flex flex-col items-center py-4 text-center">
+      <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-danger/10">
+        <AlertTriangle className="h-5 w-5 text-danger" />
+      </div>
+      <p className="text-sm text-text-muted">Could not load this data</p>
+    </div>
+  )
+}
+
 function KpiCard({
   title,
   value,
@@ -305,7 +336,7 @@ function KpiCard({
   subtitle,
 }: {
   title: string
-  value: number
+  value: number | null
   icon: React.ReactNode
   color: 'primary' | 'success' | 'warning' | 'danger' | 'info'
   subtitle: string
@@ -323,7 +354,7 @@ function KpiCard({
       <div className="flex items-start justify-between">
         <div>
           <p className="text-xs lg:text-sm font-medium text-text-muted">{title}</p>
-          <p className="mt-0.5 text-xl sm:text-2xl lg:text-[1.7rem] font-semibold tabular-nums text-text-primary">{value}</p>
+          <p className="mt-0.5 text-xl sm:text-2xl lg:text-[1.7rem] font-semibold tabular-nums text-text-primary">{value ?? '—'}</p>
           <p className="text-[11px] sm:text-xs lg:text-sm text-text-muted">{subtitle}</p>
         </div>
         <div className={`flex h-7 w-7 sm:h-9 sm:w-9 lg:h-10 lg:w-10 items-center justify-center rounded-lg ${styles[color].icon}`}>
@@ -348,7 +379,7 @@ function QuickAction({
   return (
     <Link
       to={to}
-      className="flex items-center gap-3 rounded-lg px-3 py-3 lg:px-4 lg:py-3.5 text-sm hover:bg-surface-secondary transition-colors group"
+      className="flex items-center gap-3 rounded-lg px-3 py-3 lg:px-4 lg:py-1.5 text-sm hover:bg-surface-secondary transition-colors group"
     >
       <span className="flex h-9 w-9 lg:h-10 lg:w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
         {icon}

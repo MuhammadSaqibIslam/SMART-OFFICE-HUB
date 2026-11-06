@@ -15,6 +15,7 @@ import {
   askQuestion,
 } from '@/services/askAI'
 import type { AIConversation, AIMessage } from '@/types/database'
+import { getErrorMessage } from '@/lib/errors'
 
 export function AskAIPage() {
   const [conversations, setConversations] = useState<AIConversation[]>([])
@@ -75,7 +76,7 @@ export function AskAIPage() {
       setMessages((prev) => [...prev, aiMsg])
       await loadConversations()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to get response. Please try again.')
+      setError(getErrorMessage(err, 'Failed to get response. Please try again.'))
     } finally {
       setSending(false)
     }
@@ -101,7 +102,7 @@ export function AskAIPage() {
   const activeTitle = activeId ? conversations.find((c) => c.id === activeId)?.title : null
 
   return (
-    <div className="flex h-[calc(100vh-3.5rem-3.5rem)] sm:h-[calc(100vh-4rem-3.5rem)] lg:h-[calc(100vh-4.25rem)] -m-3 sm:-m-5 lg:-m-6 rounded-none overflow-hidden bg-background">
+    <div className="flex h-[calc(100vh-3.5rem-3.5rem)] sm:h-[calc(100vh-4rem-3.5rem)] md:h-[calc(100vh-4rem-4rem)] lg:h-[calc(100vh-4.25rem-4rem)] xl:h-[calc(100vh-4.25rem)] -mx-3 -mt-3 -mb-20 sm:-mx-5 sm:-mt-5 lg:-mx-6 lg:-mt-6 xl:-mb-6 rounded-none overflow-hidden bg-background">
       {/* Chat History Sidebar */}
       <ChatSidebar
         conversations={conversations}

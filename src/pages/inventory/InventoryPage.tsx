@@ -50,6 +50,7 @@ import {
 } from '@/services/inventory'
 import type { InventoryItem, InventoryCategory } from '@/types/database'
 import { EmptyInventoryIllustration } from '@/components/shared/Illustrations'
+import { getErrorMessage } from '@/lib/errors'
 
 type StockStatus = 'all' | 'low' | 'in_stock' | 'out_of_stock'
 
@@ -73,6 +74,7 @@ export function InventoryPage() {
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState<InventoryItem | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
   const [pageError, setPageError] = useState<string | null>(null)
 
   // Debounce search
@@ -162,6 +164,7 @@ export function InventoryPage() {
   const handleDeleteConfirm = async () => {
     if (!deleteTarget) return
     setIsDeleting(true)
+    setDeleteError(null)
     try {
       await deleteInventoryItem(deleteTarget.id, deleteTarget.name)
       fetchData()
@@ -169,12 +172,14 @@ export function InventoryPage() {
       setDeleteTarget(null)
     } catch (error) {
       console.error('Delete failed:', error)
+      setDeleteError(getErrorMessage(error, 'Failed to delete. Please try again.'))
     } finally {
       setIsDeleting(false)
     }
   }
 
   const handleDeleteClose = () => {
+    setDeleteError(null)
     setDeleteOpen(false)
     setDeleteTarget(null)
   }
@@ -381,6 +386,9 @@ export function InventoryPage() {
               Are you sure you want to delete <strong>{deleteTarget?.name}</strong>? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
+          {deleteError && (
+            <div className="rounded-lg bg-danger/10 px-3 py-2 text-sm text-danger">{deleteError}</div>
+          )}
           <div className="flex justify-end gap-2 pt-2">
             <Button variant="outline" onClick={handleDeleteClose}>Cancel</Button>
             <Button
