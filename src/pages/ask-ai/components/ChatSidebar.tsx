@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
-import { Plus, Trash2, Sparkles, Loader2, MessageSquare, Pencil, Check, X } from 'lucide-react'
+import { Plus, Trash2, Sparkles, Loader2, MessageSquare, Pencil, Check, X, PanelLeftClose, PanelLeftOpen, SquarePen } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import {
   Dialog,
   DialogContent,
@@ -10,6 +11,8 @@ import {
 } from '@/components/ui/dialog'
 import type { AIConversation } from '@/types/database'
 import { formatDistanceToNow } from 'date-fns'
+
+const COLLAPSED_KEY = 'askAiSidebarCollapsed'
 
 interface ChatSidebarProps {
   conversations: AIConversation[]
@@ -34,6 +37,7 @@ export function ChatSidebar({
   isOpen,
   onClose,
 }: ChatSidebarProps) {
+  const [collapsed, setCollapsed] = useState(() => localStorage.getItem(COLLAPSED_KEY) === 'true')
   const [selected, setSelected] = useState<string[]>([])
   const [deleteTarget, setDeleteTarget] = useState<AIConversation | null>(null)
   const [renameId, setRenameId] = useState<string | null>(null)
@@ -41,6 +45,14 @@ export function ChatSidebar({
   const renameInputRef = useRef<HTMLInputElement>(null)
   const [bulkOpen, setBulkOpen] = useState(false)
   const [busy, setBusy] = useState(false)
+
+  const toggleCollapsed = () => {
+    setCollapsed((prev) => {
+      const next = !prev
+      localStorage.setItem(COLLAPSED_KEY, String(next))
+      return next
+    })
+  }
 
   const selectAllRef = useRef<HTMLInputElement>(null)
   const allSelected = conversations.length > 0 && selected.length === conversations.length
@@ -69,27 +81,60 @@ export function ChatSidebar({
   }
 
   const confirmRename = () => {
-    if (renameId && renameValue.trim()) {
-      onRename(renameId, renameValue.trim())
-    }
+    if (renameId && renameValue.trim()) onRename(renameId, renameValue.trim())
     setRenameId(null)
   }
 
-  const cancelRename = () => {
-    setRenameId(null)
-  }
+  const cancelRename = () => setRenameId(null)
 
   const relTime = (iso: string) => {
     try { return formatDistanceToNow(new Date(iso), { addSuffix: true }) } catch { return '' }
   }
 
-  const content = (
-    <div className="flex h-full flex-col bg-surface-secondary/30">
-      {/* New Chat button */}
-      <div className="p-3 border-b border-border-default">
+  // ── Collapsed rail ──
+  const collapsedRail = (
+    <div className="flex h-full w-[52px] flex-col items-center bg-surface py-3 gap-2">
+      {/* Expand */}
+      <Tooltip>
+        <TooltipTrigger
+          onClick={toggleCollapsed}
+          className="flex h-9 w-9 items-center justify-center rounded-lg text-text-muted hover:bg-surface-secondary hover:text-text-primary transition-colors"
+        >
+          <PanelLeftOpen className="h-5 w-5" strokeWidth={1.5} />
+        </TooltipTrigger>
+        <TooltipContent side="right">Expand sidebar</TooltipContent>
+      </Tooltip>
+
+      {/* New Chat */}
+      <Tooltip>
+        <TooltipTrigger
+          onClick={() => { onNew(); onClose() }}
+          className="flex h-9 w-9 items-center justify-center rounded-lg text-text-muted hover:bg-surface-secondary hover:text-text-primary transition-colors"
+        >
+          <SquarePen className="h-5 w-5" strokeWidth={1.5} />
+        </TooltipTrigger>
+        <TooltipContent side="right">New Chat</TooltipContent>
+      </Tooltip>
+    </div>
+  )
+
+  // ── Expanded content ──
+  const expandedContent = (
+    <div className="flex h-full w-full flex-col bg-surface overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center gap-2 px-3 py-3 border-b border-border-default">
+        <Tooltip>
+          <TooltipTrigger
+            onClick={toggleCollapsed}
+            className="hidden md:flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-text-muted hover:bg-surface-secondary hover:text-text-primary transition-colors"
+          >
+            <PanelLeftClose className="h-5 w-5" strokeWidth={1.5} />
+          </TooltipTrigger>
+          <TooltipContent>Collapse sidebar</TooltipContent>
+        </Tooltip>
         <button
           onClick={() => { onNew(); onClose() }}
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-primary-hover hover:shadow-md"
+          className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-primary-hover hover:shadow-md"
         >
           <Plus className="h-4 w-4" />
           New Chat
@@ -222,12 +267,20 @@ export function ChatSidebar({
 
   return (
     <>
+      {/* Mobile backdrop */}
       {isOpen && <div onClick={onClose} className="fixed inset-0 z-40 bg-black/40 md:hidden" aria-hidden="true" />}
-      <aside className={`fixed left-0 top-0 z-50 h-full w-72 border-r border-border-default bg-surface transition-transform duration-200 md:relative md:translate-x-0 md:z-auto md:shrink-0 ${
+
+      {/* Mobile drawer */}
+      <aside className={`fixed left-0 top-0 z-50 h-full w-72 border-r border-border-default bg-surface transition-transform duration-200 md:hidden ${
         isOpen ? 'translate-x-0' : '-translate-x-full'
       }`}>
-        {content}
+        {expandedContent}
       </aside>
+
+      {/* Desktop */}
+      <div className={`hidden md:flex md:shrink-0 border-r border-border-default transition-all duration-200 ${collapsed ? 'w-[52px]' : 'w-72'}`}>
+        {collapsed ? collapsedRail : expandedContent}
+      </div>
     </>
   )
 }

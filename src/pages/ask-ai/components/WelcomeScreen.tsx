@@ -46,9 +46,9 @@ export function WelcomeScreen({ onSuggestionClick }: WelcomeScreenProps) {
             <button
               key={text}
               onClick={() => onSuggestionClick(text)}
-              className="group flex items-center gap-3 rounded-xl border border-border-default bg-surface px-4 py-3.5 text-left text-sm text-text-secondary transition-all hover:border-primary/40 hover:bg-primary/5 hover:text-text-primary hover:shadow-sm"
+              className="group flex items-center gap-3 rounded-xl border border-border-default bg-surface px-4 py-3.5 text-left text-sm text-text-secondary transition-all duration-200 hover:border-primary hover:bg-primary/10 hover:text-text-primary hover:shadow-md hover:-translate-y-0.5 active:scale-[0.97] active:border-primary active:bg-primary/10 active:text-text-primary"
             >
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-surface-secondary text-text-muted group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-surface-secondary text-text-muted group-hover:bg-primary/10 group-hover:text-primary group-active:bg-primary/10 group-active:text-primary transition-colors">
                 <Icon className="h-4 w-4" />
               </div>
               <span>{text}</span>

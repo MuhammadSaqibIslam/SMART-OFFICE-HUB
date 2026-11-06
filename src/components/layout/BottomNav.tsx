@@ -21,7 +21,7 @@ interface BottomNavProps {
 export function BottomNav({ onMoreClick }: BottomNavProps) {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-30 border-t border-border-default bg-surface xl:hidden">
-      <div className="flex h-14 md:h-16 items-stretch">
+      <div className="flex h-14 md:h-16 items-stretch px-2 sm:px-4">
         {tabs.map((tab) => (
           <NavLink
             key={tab.to}
