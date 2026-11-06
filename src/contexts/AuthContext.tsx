@@ -7,6 +7,7 @@ import {
 } from 'react'
 import type { User, Session } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase/client'
+import { DEMO_EMAIL, DEMO_PASSWORD, enterDemoMode, exitDemoMode } from '@/lib/demo/mode'
 import type { Profile } from '@/types/auth'
 
 interface AuthContextType {
@@ -17,6 +18,7 @@ interface AuthContextType {
   isAuthenticated: boolean
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: string | null }>
   signIn: (email: string, password: string) => Promise<{ error: string | null }>
+  signInAsGuest: () => Promise<{ error: string | null }>
   signInWithGoogle: () => Promise<{ error: string | null }>
   signOut: () => Promise<void>
   refreshProfile: () => Promise<void>
@@ -70,6 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const signUp = async (email: string, password: string, fullName: string) => {
+    exitDemoMode()
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -82,7 +85,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: error?.message ?? null }
   }
 
+  const signInAsGuest = async () => {
+    enterDemoMode()
+    const { error } = await supabase.auth.signInWithPassword({ email: DEMO_EMAIL, password: DEMO_PASSWORD })
+    if (error) exitDemoMode()
+    return { error: error?.message ?? null }
+  }
+
   const signIn = async (email: string, password: string) => {
+    exitDemoMode()
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -102,6 +113,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = async () => {
     await supabase.auth.signOut()
+    exitDemoMode()
     setUser(null)
     setProfile(null)
     setSession(null)
@@ -112,6 +124,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const resetPassword = async (email: string) => {
+    exitDemoMode()
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset-password`,
     })
@@ -128,6 +141,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAuthenticated: !!session,
         signUp,
         signIn,
+        signInAsGuest,
         signInWithGoogle,
         signOut,
         refreshProfile,

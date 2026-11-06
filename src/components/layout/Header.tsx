@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { getNotifications, getReadIds, saveReadIds, type AppNotification } from '@/services/notifications'
 import { EmptyNotificationsIllustration } from '@/components/shared/Illustrations'
+import { isDemoMode } from '@/lib/demo/mode'
 
 const kindDot: Record<string, string> = {
   danger: 'bg-danger',
@@ -103,24 +104,29 @@ export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
   return (
     <header className="sticky top-0 z-30 flex h-14 sm:h-16 lg:h-[4.25rem] items-center justify-between border-b border-border-default bg-surface px-3 sm:px-6">
       {/* Page Title + mobile menu */}
-      <div className="flex items-center gap-2">
+      <div className="flex min-w-0 items-center gap-2">
         <button
           onClick={onMenuClick}
-          className="flex h-9 w-9 items-center justify-center rounded-lg text-text-muted hover:bg-surface-secondary hover:text-text-primary xl:hidden"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-text-muted hover:bg-surface-secondary hover:text-text-primary xl:hidden"
           aria-label="Open menu"
         >
           <Menu className="h-5 w-5 lg:h-6 lg:w-6" />
         </button>
         <h1
           onClick={() => { if (location.pathname !== '/') navigate('/') }}
-          className={`text-base sm:text-xl lg:text-2xl font-bold text-primary whitespace-nowrap ${location.pathname !== '/' ? 'cursor-pointer hover:text-primary-hover transition-colors' : ''}`}
+          className={`text-base sm:text-xl lg:text-2xl font-bold text-primary truncate ${location.pathname !== '/' ? 'cursor-pointer hover:text-primary-hover transition-colors' : ''}`}
         >
           {page.title}
         </h1>
+        {isDemoMode() && (
+          <span className="hidden shrink-0 rounded-full bg-warning/10 px-2 py-0.5 text-[11px] font-semibold text-warning sm:inline">
+            Guest
+          </span>
+        )}
       </div>
 
       {/* Right Actions */}
-      <div className="flex items-center gap-1 lg:gap-2">
+      <div className="flex shrink-0 items-center gap-1 lg:gap-2">
         {/* Notifications */}
         <div className="relative" ref={notifRef}>
           <button

@@ -15,7 +15,7 @@ const loginSchema = z.object({
 type LoginForm = z.infer<typeof loginSchema>
 
 export function LoginPage() {
-  const { signIn, isAuthenticated, isLoading: authLoading } = useAuth()
+  const { signIn, signInAsGuest, isAuthenticated, isLoading: authLoading } = useAuth()
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -42,6 +42,12 @@ export function LoginPage() {
   const onSubmit = async (data: LoginForm) => {
     setError(null)
     const { error } = await signIn(data.email, data.password)
+    if (error) setError(error)
+  }
+
+  const handleGuestSignIn = async () => {
+    setError(null)
+    const { error } = await signInAsGuest()
     if (error) setError(error)
   }
 
@@ -135,6 +141,24 @@ export function LoginPage() {
               )}
             </Button>
           </form>
+
+          {/* Guest access */}
+          <div className="my-5 flex items-center gap-3">
+            <div className="h-px flex-1 bg-border-default" />
+            <span className="text-xs text-text-muted">or</span>
+            <div className="h-px flex-1 bg-border-default" />
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleGuestSignIn}
+            className="h-10 w-full rounded-lg text-sm font-medium"
+          >
+            Sign in as Guest
+          </Button>
+          <p className="mt-2 text-center text-xs text-text-muted">
+            Explore with sample data. Changes stay in this browser.
+          </p>
 
           {/* Sign up link */}
           <p className="mt-6 text-center text-sm text-text-secondary">
