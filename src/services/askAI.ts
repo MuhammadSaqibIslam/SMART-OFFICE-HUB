@@ -93,7 +93,9 @@ export async function askQuestion(
   })
 
   if (response.error) {
-    throw new Error(response.error.message || 'Failed to get AI response')
+    // The function's own error message is in the response body.
+    const body = await response.error.context?.json?.().catch(() => null)
+    throw new Error(body?.error || 'Failed to get AI response')
   }
 
   return response.data?.answer || 'Sorry, I could not generate a response.'

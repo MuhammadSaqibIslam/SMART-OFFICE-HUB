@@ -1,5 +1,24 @@
+import ReactMarkdown, { type Components } from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import { Sparkles, User } from 'lucide-react'
 import type { AIMessage } from '@/types/database'
+
+const MARKDOWN_COMPONENTS: Components = {
+  strong: ({ children }) => <strong className="font-semibold text-text-primary">{children}</strong>,
+  ul: ({ children }) => <ul className="list-disc space-y-1 pl-5">{children}</ul>,
+  ol: ({ children }) => <ol className="list-decimal space-y-1 pl-5">{children}</ol>,
+  h1: ({ children }) => <p className="font-semibold text-text-primary">{children}</p>,
+  h2: ({ children }) => <p className="font-semibold text-text-primary">{children}</p>,
+  h3: ({ children }) => <p className="font-semibold text-text-primary">{children}</p>,
+  code: ({ children }) => <code className="rounded bg-surface-secondary px-1 py-0.5 text-[13px]">{children}</code>,
+  table: ({ children }) => (
+    <div className="overflow-x-auto rounded-lg border border-border-default">
+      <table className="w-full border-collapse text-left text-[13px] [overflow-wrap:normal]">{children}</table>
+    </div>
+  ),
+  th: ({ children }) => <th className="whitespace-nowrap border-b border-border-default bg-surface-secondary px-3 py-2 font-semibold text-text-primary">{children}</th>,
+  td: ({ children }) => <td className="border-b border-border-default px-3 py-2 align-top">{children}</td>,
+}
 
 interface ChatMessageProps {
   message: AIMessage
@@ -22,9 +41,17 @@ export function ChatMessage({ message }: ChatMessageProps) {
           <p className="text-xs font-semibold text-text-primary mb-1.5">
             {isUser ? 'You' : 'Ask AI'}
           </p>
-          <div className="text-sm text-text-secondary leading-relaxed whitespace-pre-wrap [overflow-wrap:anywhere]">
-            {message.content}
-          </div>
+          {isUser ? (
+            <div className="text-sm text-text-secondary leading-relaxed whitespace-pre-wrap [overflow-wrap:anywhere]">
+              {message.content}
+            </div>
+          ) : (
+            <div className="space-y-2 text-sm text-text-secondary leading-relaxed [overflow-wrap:anywhere]">
+              <ReactMarkdown remarkPlugins={[remarkGfm]} components={MARKDOWN_COMPONENTS}>
+                {message.content}
+              </ReactMarkdown>
+            </div>
+          )}
         </div>
       </div>
     </div>
